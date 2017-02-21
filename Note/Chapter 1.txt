@@ -1,0 +1,199 @@
+Chapter 1
+1.2.1 CPU - central processing unit
+	* computer brain
+	* retrieves instructions from memory and executes them
+	* has 2 components: a control unit & arithmetic/logic unit
+	* built on small silicon semiconductor chips that contain millions of tiny electric switches => transistors -> processing info
+	* internal clock (speed: Hz, MHz, GHz) -> emits electronic pulses -> control and synchronize the pace of operations
+	* core: performs the reading and executing of instructions
+
+1.2.2 Bits and Bytes
+	* series of switches: 1 - On; 0 - Off => binary digits (bits)
+	* a byte - a minimum storage unit = 8 bits
+	* encoding scheme: a set of rules that govern how a computer translates charaters, numbers, and symbols into data the computer can actually work with. (ASCII encoding scheme)
+
+1.2.3 Memory
+	* consists of an ordered sequence of bytes
+	* every byte has a unique address
+	* the byte can be accessed any order => RAM (random-acess memory)
+
+1.2.4 Storage devices
+	* RAM : info is lost when the system's power is turned off
+	* programs and data are permanently stored on storage devices - there are 3:
+		** Magnetic disk drives
+		** Optical disc drives (CD - 700 MB and DVD - 4.7 GB)
+		** USB (universal serial bus) flash drives - 256 GB
+
+1.2.5 Input and output devices
+	* Keyboard
+	* Mouse
+	* Monitor - screen solution: pixels (dots form an image; 1024 x 768 pixels); dot pitch (amount of space between pixels (mm))
+
+1.2.6 Communication Devices
+	* Dial-up modem
+	* Digital subscriber line (DSL)
+	* Cable modem
+	* Network interface card (NIC) - devices that connect a computer to a local area network (LAN)
+	* Wireless networking
+
+1.3 Programming languages
+1.3.1 Machine language : 
+	* a set of built-in primitive instructions 
+	* in the form of binary code
+
+1.3.2 Assembly language - a low level language
+	* close in nature to machine language & machine dependent
+	* alternative to machine languages
+	* uses short descriptive word - mnemonic => represent machine language instructions
+	* assembler: program that translate assembly language programs to machine code
+
+1.3.3 High-level lanuage
+	* platform independent: written in a high-level language and run in different types of machines
+	* source program or source code: program written in a high-level language
+	* interpreter/compiler: translate source code into machine code for execution
+
+	**** differnce between an interpreted language and a compiled language???
+
+1.4 Operating systems (Mac, Window, Linux)
+	* program that runs on a computer
+	* users and application access the computer's hardware via the operating system
+	* major tasks: 
+		** controlling and monitoring system activities
+		** allocating and assigning system resources
+		** scheduling operations
+
+1.4.1 Controlling and monitoring system activities
+	* perform basic tasks: recognizing input, sending output, keep track of files and folders,...
+	* ensure that different programs and users working at the same time do not interfere with each other
+	* responsible for security
+
+1.4.2 Allocating and assigning system resources
+	* determine what resources a program needs (CPU time, memory space, disks, input and output devices)
+	* allocate and assign them to run the program
+
+1.4.3 Scheduling operations
+	* => make efficient use of system resources
+	* Multiprogramming: multiple programms run simultaneously by sharing the same CPU
+	* Multithreading: allowing a single program to execute multiple tasks at the same time
+	* Multiprocessing/parallel processing: uses 2 or more processors together to perform subtasks concurrently and then combine solutions of the subtasks to obtain a solution for the entire task
+
+1.5 Java, the WWW, and beyond
+	* Java:
+		** developed by James Gosling at Sun Microsystems
+		** designed in 1991 (consumer electronic appliances)
+		** renamed Java in 1995, redesigned for developing web applications
+		** Java is a full-featured, general-purpose programming language that can be used to develop robust mission-critical applications across platforms on servers, desktop, and mobile devices
+	* Applets -  a web browser; employ a modern graphical interface to interact with users on the web and process their requests
+	* RIA (rich internet application) - web application designed to deliver the same features and functions normally associated with desktop applications
+
+1.6 The JAVA language specification, API, JDK, and IDE
+	* Java language specification - a technical definition of the Java programming language's syntax and semantics
+	* Java library is defined in the Java API
+	* JDK is the software for developing and running Java programs
+	* an IDE is an integrated development environment for rapidly developing programs
+	* API (application program interface) - library - contains predefined classes and interfaces for developing Java programs
+	* 3 editions:
+		** Java Standard Edition (Java SE) - develop client-side applications that can run standalone or run from a web browser
+		** Java Enterprise Edition (Java EE) - develop server-side applications
+		** Java Micro Edition (Java ME) - develop applications for mobile devices
+
+1.7 A simple Java Program
+Welcome.java
+
+public class Welcome {
+	public static void main(String[] args) {
+	//Display message Welcome to Java! on the console
+	System.out.println("Welcome to Java!");
+	}
+}
+
+1.8 Creating, Compiling, and Executing a Java Program
+	* save a Java program in a .java file and compile it into a .class file, The .class file is executed by the Java Virtual Machine
+	* bytecode is similar to machine instructions but architecture neutral and can run on any platform that has a JVM - a program that interprets Java bytecode
+
+	Java source code file(.java) --compiled by--> Java Compiler --generates--> Java bytecode executable file(.class) --executed by--> JVM
+
+	* execute a class file that does not exist => NoClassDefFoundError
+	* execute a class file that does not have/mistype a main method => NoSuchMethodError
+
+1.9 Programming style and documentation
+	* programming style: deals with what programs look like
+	* documenttaion: the body of explanatory remarks and comments pertaining to a program
+
+1.9.1 Appropriate comments and comment style
+	// line comments
+	/* block comments
+	/** ... */ javadoc comments, can be extracted into an HTML file using the JDK's javadoc command => for commenting on an entire class or method
+
+1.9.2 Proper indentation and spacing
+	* => clear and easy to read, debug, and maintain
+	* indentation -> illustrate the structural relationships between a program's components or statements
+
+1.9.3 Block styles
+	* a block: a group of statements surrounded by braces
+		** next-line style
+		** end-of-line style
+
+1.10 Programming errors
+1.10.1 Syntax errors
+	* Errors that are detected  by the compiler are called syntax errors or compile errors
+
+1.10.2 Runtime errors
+	* errors that cause a program to terminate abnormally
+	* input mistakes typically cause runtime errors
+	* division by 0
+
+1.10.3 Logic errors
+	* errors occur when a program does not perform the way it was intended to
+
+1.10.4 Common errors: missing a closing brace, a semicolon, quotation marks for strings, and misspelling names
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

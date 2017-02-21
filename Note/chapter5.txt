@@ -1,0 +1,47 @@
+CHAPTER 5: LOOPS
+
+5.1 Intro
+	* A loop can be used to tell a program to execute statements repeatedly
+	* while loops
+	* do-while loops
+	* for loops
+
+5.2 The While loop
+	* executes statements repeatedly while the condition is true
+	* Counter-controlled loop -> know exactly how many times the loop body needs to be executed
+
+	5.2.5 Input and output redirections
+		java SentinelValue < input.txt
+		=> this command is called input redirection. The program takes the input from the file input.txt rather than having the user type the data from the keyboard
+
+		java ClassName > output.txt
+		* output redirection -> sends the output to a file rather than displaying it on the console
+
+5.3 The do-while loop
+	* executes the loop body first and then checks the loop continuation condition
+
+5.4 The for loop
+	* has a concise syntax for writing loops
+
+5.7 Minimizing numeric errors
+	* using floating-point numbers in the loop continuation condition may cause numeric errors
+
+5.8 Keywords break and continue
+	* provide additional controls in a loop
+	* break -> break out of a loop -> used in switch statement or in a loop
+	* continue -> end the current iteration and program control goes to the end of the loop body
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

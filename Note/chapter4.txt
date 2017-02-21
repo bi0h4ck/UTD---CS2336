@@ -1,0 +1,93 @@
+CHAPTER 4: MATHEMATICAL FUNCTIONS, CHARACTERS, AND STRINGS
+
+4.2 Common mathematical functions
+	
+	4.2.1 Trigonometric methods
+	Math class
+	sin(radians)
+	cos(radians)
+	tan(radians)
+	toRadians(degree)
+	toDegree(radians)
+	asin(a) - return the angle in radians for the inverse of sine (-PI/2, PI/2)
+	acos(a)
+	atan(a)
+
+	4.2.2 Exponent methods
+	exp(x)		e^x
+	log(x)		(ln(x) = log e of (x))
+	log10(x)	log 10 of(x)
+	pow(a, b)	a^b
+	sprt(x)		
+
+	4.2.3 The rounding methods
+
+	ceil(x)	-> x is rounded up to its nearest integer. This integer is returned as a double value
+	floor(x) -> x is rounded down to its nearest integer. This integer is returned as a double value
+	rint(x) -> x is rounded up to its nearest integer. If x is equally close to 2 integers, the even one is returned as a double value
+	round(x) -> returns (int)Math.floor(x + 0.5) if x is a float and returns (long)Math.floor(x + 0.5) if x is a double
+
+	4.2.4 The min, max, and abs methods
+		Math.max(a, b)
+		Math.min(a, b)
+		Math.abs(a)
+
+	4.2.5 The random method
+		a + Math.random() * b -> return a random number between a and a + b, excluding a + b
+
+	4.3 Character data type and operations
+		* A character data type represents a single character
+		ch letter = 'A';
+
+		4.3.1 Unicode and ASCII code (American Standard Code for Information Interchange)
+			* Mapping a character to its binary representation -> encoding
+			* how characters are encoded -> encoding scheme
+			* A 16-bit Unicode takes two bytes, preceded by \u, expressed in four hexadecimal digits that run from \u0000 to \uFFFF.
+			* Most computers use ASCII - an 8-bit encoding scheme for representing all uppercase and lowercase letters, digits, punctuation marks, and control characters.
+
+		4.3.2 Escape sequences for special characters
+			\b 		backspace
+			\t 		tab
+			\n
+			\f 		formfeed
+			\r 		carriage return
+			\\
+			\"
+
+		4.3.3 Casting between char and numberic types
+			* Any positive integer between 0 and FFFF in hexadecimal can be cast into a character implicitly. Any number not in this range must be cast into a char explicitly.
+
+		4.3.4 Comparing and testing characters
+			isDigit(ch)
+			isLetter(ch)
+			isLetterOfDigit(ch)
+			isLowerCase(ch)
+			isUpperCase(ch)
+			toLowerCase(ch)
+			toUpperCase(ch)
+
+	4.6 Formatting Console output
+		* format specifier specifies how an item should be displayed
+			%b 		boolean
+			%c 		character
+			%d 		decimal integer
+			%f 		floating-point number
+			%e 		a number in standard scientific notation
+			%s 		string
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

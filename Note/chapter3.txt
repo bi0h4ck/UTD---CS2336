@@ -1,0 +1,169 @@
+CHAPTER 3: SELECTIONS
+
+3.1 
+	* Selection statements: statements that let you choose actions with alternative courses
+
+3.2 boolean Data Type
+	* The boolean data type declares a variable with the value either true or false
+	* Relational operators
+		<	<=	>	 >=		==	!=
+
+3.3 if statements
+	* is a construct that enableds a program to specify alternative paths of execution
+
+	SimpleIfDemo.java
+
+	public class SimpleIfDemo {
+		public static void main(String []args) {
+			Scanner input = new Scanner(System.in);
+
+			System.out.println("Enter an integer: ");
+			int number = input.nextDouble();
+
+			if (number % 5 == 0)
+				System.out.println("HiFive");
+			if (number % 2 == 0)
+				System.out.println("HiEven");
+		}
+	}
+
+3.4 Two-way if-else statements
+	* decides the execution path based on whether the condition is true or false
+	* syntax
+
+	if (boolean-expression) {
+		statment(s)-for-the-true-case;
+	} else {
+		statemnt(S)-for-the-false-case;
+	}
+
+3.5 Nested if and multi-way if-else statements
+
+3.6 Common errors and pitfalls
+	** Common errors:
+		* Forgetting necesary braces
+		* Wrong semicolon at the if line
+		* Redundant testing of boolean values
+		* Dangling else ambiguity (matching indentation)
+		* Equality test of two floating-point values
+
+	double x = 1.0 - 0.1 - 0.1 - 0.1 - 0.1 - 0.1;
+	// 0.50000000000000000001
+	System.out.println(x == 0.5);
+
+	// false
+
+	final double EPSILON = 1E - 14;
+	double x  = 1.0 - 0.1 - 0.1 - 0.1 - 0.1 - 0.1;
+	if (Math.abs(x - 0.5) < EPSILON)
+		System.out.prinln(x + " is approximately 0.5");
+
+
+	** Common pitfall:
+		* Simplifying boolean variable assignment
+		* Avoiding duplicate code in different cases
+
+3.7 Generating random numbers
+	* Math.random() -> obtain a random double value betwen 0.0 and 1.0, excluding 1.0
+	=> (int)(Math.random() * 10) => radom single-digit integer between 0 and 9
+
+	SubtractionQuiz.java
+
+	import javal.util.Scanner;
+
+	public class SubtractionQuiz {
+		public static void main(String []args) {
+			int number1 = (int)(Math.random() * 10);
+			int number2 = (int)(Math.random() * 10);
+
+			if (number1 < number2) {
+				int temp = number1;
+				number1 = number2;
+				number2 = temp;
+			}
+
+			System.out.print("What is " + number1 + " - " + number2 + "? ");
+			Scanner input = new Scanner(System.in);
+			int answer = input.nextInt();
+
+			if (number 1 - number 2 == answer)
+				System.out.println("You are correct!");
+			else {
+				System.out.println("Your answer is wrong.");
+				System.out.println(number1 " - " + number2 + " should be " + (number1 - number2));
+			}
+		}
+	}
+
+
+3.10 Logical operators
+	* !		&&		|| 		^ (p1 ^ p2 is the same as p1 != p2)
+
+	* De Morgan's law
+	!(condition1 && condition2) is the same as !condition1 || !condition2
+	!(condition1 || condition2) is the same as !condition1 && !condition2
+
+3.11 switch statements
+	* executes statements based on the value of a variable or an expression
+	* syntax
+
+	switch (switch-expression) {
+		case value1: statement(s)1;
+			break;
+		case value2: statment(s)2;
+			break;
+		case valueN: statment(s)N;
+			break;
+		default: statment(s)-for-default;
+	}
+
+	* switch statment observes the following rules:
+		** switch-expression must yield a value of char, byte, short, int, or String type
+		** value1,..., and valueN are constant expressions, and must have the same data type as the value of the switch-expression. 
+		** when the value in a case statement matches the value of the switch-expression, the statements starting from this case are executed until either a break statement or the end of the switch statement is reached
+		** the default case, which is optional -> perform actions when none of the specified cases matches the switch-expression
+		** the keyword break is optional. The break statement immediately ends the switch statement
+
+3.14 Conditional expressions
+	* evaluates an expression based on a condition
+	* syntax
+	boolean-expression ? expression1 : expression2;
+	=> result is expression1 if boolean-expression is true; otherwise the result is expression2
+
+3.15 Operator precedence and associativity
+	* determine the order in which operators are evaluated
+	* Operator precedence chart
+	var++	var--
+	+ 	-(unary plus and minus)	++var 	--var
+	(type)(Casting)
+	!
+	*	/	%
+	+	-(binary addition and subtraction)
+	<	<=	>	>=
+	==	!=
+	^
+	&&
+	||
+	= 	+=	-=	*=	/=	%=
+
+3.16 Debugging
+	* is the process of finding and fixing errors in a program
+	* bugs -> logic errors
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

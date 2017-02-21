@@ -1,0 +1,217 @@
+CHAPTER 2 - ELEMENTARY PROGRAMMING
+2.2 Writing a simple program
+	* involves designing a strategy for solving the problem and then using a programming language to implement that strategy
+	* involves designing algorithms and translating algorithms into programming instructions, or code.
+	* algorithm describes how a problem is solved by listing the actions that need to be taken
+	* variable: represents a value stored in the computer's memory
+	* primitive data types/fundamental types: simple data types representing integers, real numbers, characters, and Bolean types
+	* floating-point numbers: real numbers
+
+	ComputeArea.java
+
+	public class ComputeArea {
+		public static void main (String[] args) {
+			double radius; // Declare radius
+			double area; // Declare area
+			radius = 20; 
+			area = radius * 3.14159;
+
+			//Display results
+			System.out.println("The area for the circle of radius " + radius " is " + area);
+			// The area for the circle of radius 10.0 is 1256.636
+		}
+	}
+
+2.3 Reading input from the console
+	* Scanner input = new Scanner(System.in);
+	// creates a Scanner object and assigns its reference to the variable input
+
+	To invoke a method on an object is to ask the object to perform a task
+	* double radius = input.nextDouble();
+	/** invoke the nextDouble() method to read a double value
+	read a number from the keyboard and assigns the number to radius
+	*/
+
+	ComputerAreaWithConsoleInput.java
+
+	inport java.util.Scanner; // Scanner is in the java.util package
+
+	public class ComputeAreaWithConsoleInput {
+		public static void main(String[] args) {
+			Scanner input = new Scanner(System.in);
+
+			System.out.println("Enter a number for radius: ");
+			double radius = input.nextDouble();
+
+			double area = radius * radius * 3.14159;
+
+			System.out.println("The area for the circe of radius " + radius + " is " + area);
+		}
+	}
+
+	**************
+	Enter a number for radius: 2.5
+	The area for the circle of radius 2.5 is 19.6349375
+
+
+	* prompt -> directs the user to enter an input
+	* specific import; wildcard import
+
+2.4 Identifiers
+	* the names that identify the elements such as classes, methods, and variables in a program
+	* obey the following rules:
+		** letters, digits, underscores, and $
+		** must start with a letter, _, or $; can't start with a digit
+		** can't be a reserved word
+		** can be of any length
+	* case sensitive
+
+2.5 Variables
+	* are used to represent values that may be changed in the program
+	* variable declaration tells the compiler to allocate appropriate memory space for the variable based on its data type
+	* scope of a variable is the part of the program where the variable can be referenced
+
+2.6 Assignment statements and assignment expressions
+	* assignment statement designates a value for a variable
+	* assignment statement can be used as an expression in Java
+	* an expression represents a computation involving values, variables, and operators that, taking them together, evaluates to a value
+	* variable = expression;
+
+2.7 Named constants
+	* an indentifier that represents a permanant value
+
+	final datatype CONSTANTNAME = value;
+
+2.8 Naming conventions
+	* use lowercase for variables and methods
+	* capitalize the first letter of each word in a class name
+	* capitalize every letter in a constant, and use _
+	==> make your programs easy to read
+
+2.9 Numeric data types and operations
+2.9.1 Numeric types
+	byte
+	short
+	int
+	long
+	float
+	double
+
+2.9.2 Reading numbers from the keyboard
+	nextByte()
+	nextShort()
+	nextInt()
+	nextLong()
+	nextFloat()
+	nextDouble()
+
+2.9.3 Numeric operators
+	+
+	-
+	*
+	/
+	%
+
+2.9.4 Exponent operations
+	Math.pow(a, b); //a^b
+
+2.10 Numeric literals
+	* a literal is a constant value that appears directly in a program
+
+2.10.1 Integer literals
+	* by default, an integer literal is a decimal integer number
+	* leading 0B or 0b - binary integer literal
+	* leading 0 - octal integer literal
+	* leading 0x or 0X - hexadecimal integer literal
+
+2.10.2 Floating-point literals
+	* by default, an floating-point literal is treated as a double type value
+	* double type values are more accurate than the float type values
+
+2.10.3 Scientific notaiton
+	* floating-point literals can be written in scientific notation in the form of a x 10^b
+	ex: 1.23456 x 10^2 => 1.23456E2
+
+2.11 Evaluating expressions and operator precedence
+	1. *, /, % are applied first
+	2. + - are applied last
+
+2.12 Displaying the current time
+	* The currentTimeMillis method in the System class returns the current time in milliseconds elapsed since midnight, Jan 1, 1970 GMT => UNIX epoch
+	* The epoch is the point when time starts, and 1970 was the year when the UNIX operating system was formally introduced
+
+	ShowCurrentTime.java
+
+	public class ShowCurrentTime {
+		public static void main(String [] args) {
+			long totalMilliseconds = System.currentTimeMillis();
+
+			long totalSeconds = totalMilliseconds / 1000;
+
+			long currentSecond = totalSecond % 60;
+
+			long totalMinutes = totalSeconds / 60;
+
+			long currentMinute = totalMinutes % 60;
+
+			long totalHours = totalMinutes / 60;
+
+			long currentHours = totalHours % 24;
+
+			System.out.println("Current time is " 
+			+ currentHour + ":" 
+			+ currentMinute + ":"
+			+ currentSecond + " GMT");
+		}
+	}
+
+2.13 Augmented assignment operators
+	+= : addition assignment operator
+	-=
+	*=
+	/=
+	%=
+
+2.14 Increment and decrement operators
+	++ and -- : incrementing and decrementing a variable by 1
+	++i : prefix increment
+	i-- : postfix decrement
+
+2.15 numeric type conversions
+	* casting - an operation that converts a value of one data type into a vaue of another data type
+	* widening a type >< narrowing a type => narrowing a type explicitly
+
+	 x1 op= x2 => x1 = (T)(x1 op x2); // T is the type for x1
+
+2.16 Software development process
+	1. Requirement specification
+	2. System analysis
+	3. System design
+	4. Implementation
+	5. Testing
+	6. Deployment
+	7. Maintenance
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
