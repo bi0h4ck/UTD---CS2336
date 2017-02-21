@@ -1,6 +1,8 @@
 package Customer;
 
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -15,9 +17,16 @@ import static java.lang.Math.pow;
 public class ProcessOrder {
     public void run () throws IOException {
         //Assign file names to variables
-        String transactionFileName = "Sample_transactions.txt";
-        String customerFileName = "Sample_customer.txt";
-        String preferredCustomerFileName = "Sample_preferred.txt";
+//        String transactionFileName = "Sample_transactions.txt";
+//        String customerFileName = "Sample_customer.txt";
+        //String preferredCustomerFileName = "Sample_preferred.txt";
+
+        File transactionFileName = new File("Sample_transactions.txt");
+        File preferredFileName = new File("Sample_preferred.txt");
+        File customerFileName = new File("Sample_customer.txt");
+        //Check if the preferred Customer file exists, if not, create one
+        File preferredCustomerFileName = createPreferredFileIfNotExists(preferredFileName);
+
 
         //Read files into array of lines of string
         String[] arrayOfCustomerLines = readFileIntoArrayOfLine(customerFileName);
@@ -48,7 +57,7 @@ public class ProcessOrder {
 
 
             // If the customer belongs to preferred customer, call the processPreferred function
-            if (isCustomer < 0 && isPreferred >= 0) {
+            if (isCustomer < 0 && isPreferred >= 0 && preferredCustomerFileName.length() > 0) {
                 processPreferred(arrayOfPreferred, isPreferred, amountSpent, preferredCustomerFileName);
 
                 // If the customer belongs to regular customer, call the processCustomer function
@@ -75,9 +84,18 @@ public class ProcessOrder {
         }
     }
 
+    public File createPreferredFileIfNotExists(File preferredFileName) throws IOException {
+        if(!preferredFileName.exists()){
+            File newFile = new File("Sample_preferred.txt");
+            newFile.createNewFile();
+            return newFile;
+        } else
+            return preferredFileName;
+    }
+
     // Write the updated array of customer into a temporary file,
     // then delete the old file, and use the old name to rename the new
-    public void writeToFile(String[] array, String fileName) throws IOException{
+    public void writeToFile(String[] array, File oldFile) throws IOException{
         String tmp = "tmp.txt";
         BufferedWriter out = new BufferedWriter((new FileWriter(tmp)));
         for (int count = 0; count < array.length; count ++){
@@ -87,7 +105,7 @@ public class ProcessOrder {
         out.flush();
         out.close();
 
-        File oldFile = new File(fileName);
+
         oldFile.delete();
 
         File newFile = new File(tmp);
@@ -128,7 +146,7 @@ public class ProcessOrder {
 
     //This function is called when the customer ID in the transaction file belongs to preferred customers
     public void processPreferred(PreferredCustomer[] arrayOfPreferred, int isPreferred,
-                                            double amountSpent, String fileName) throws IOException{
+                                            double amountSpent, File fileName) throws IOException{
         //get the discount percentage
         double discount = arrayOfPreferred[isPreferred].getDiscountPercentage();
         //get the amount spent after discount
@@ -222,7 +240,7 @@ public class ProcessOrder {
     }
 
     //read a file into an array of String
-    public String[] readFileIntoArrayOfLine(String filename) throws IOException {
+    public String[] readFileIntoArrayOfLine(File filename) throws IOException {
         FileReader fileReader = new FileReader(filename);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         List<String> lines = new ArrayList<>();
