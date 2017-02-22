@@ -1,4 +1,4 @@
-package ticketing;
+package com.ticketing;
 
 /**
  *  Launches the ticket reservation system

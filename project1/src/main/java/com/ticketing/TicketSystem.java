@@ -1,4 +1,4 @@
-package ticketing;
+package com.ticketing;
 
 import java.io.*;
 import java.util.InputMismatchException;
@@ -37,17 +37,15 @@ public class TicketSystem {
     public void run() throws Exception {
         boolean backToMainMenu = false;
         boolean wantToReserve;
-        String [] files = {"A1.txt", "A2.txt", "A3.txt"};
         do {
             Scanner scanner = new Scanner(System.in);
 
             //Show the main menu and get user input
-            int getUserInput = showMainMenu(scanner);
-            String fileName = files[getUserInput - 1];
-
+            String getUserInput = Integer.toString(showMainMenu(scanner)).trim();
+            String fileName = "A"+getUserInput+".txt";
             //Read file, get number of row, number of column of that file
-            FileReader fileReader = new FileReader(fileName);
-
+            String path = getClass().getClassLoader().getResource(fileName).getPath();
+            FileReader fileReader = new FileReader(path);
             int row = numOfRow(fileReader);
             System.out.println("row: " + row);
             int col = numOfColumn(fileName);
@@ -159,7 +157,7 @@ public class TicketSystem {
         } while (backToMainMenu);
 
         //print report
-        printReport(files);
+        printReport();
     }
 
     //print out the recommended seats
@@ -260,8 +258,9 @@ public class TicketSystem {
     }
 
     // read the .txt file and store the seat info into 2D array of String
-    private String[][] readAuditorium(String fileName, int row, int col) throws IOException{
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+    private String[][] readAuditorium(String fileName, int row, int col) throws IOException {
+        String path = getClass().getClassLoader().getResource(fileName).getPath();
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
         String [][]seats = new String[row][col];
         String []rowOfSeat;
         int mRow = 0;
@@ -287,7 +286,7 @@ public class TicketSystem {
     }
 
     // get number of row
-    private int numOfRow(FileReader fileReader) throws IOException {
+    private int numOfRow(Reader fileReader) throws IOException {
         LineNumberReader lnr = new LineNumberReader(fileReader);
         lnr.skip(Long.MAX_VALUE);
         int lineNumber = lnr.getLineNumber();
@@ -300,7 +299,8 @@ public class TicketSystem {
 
     // get number of column
     private int numOfColumn(String fileName) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+        String path = getClass().getClassLoader().getResource(fileName).getPath();
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
         String line;
         int column = 0;
         while ((line = bufferedReader.readLine()) != null) {
@@ -477,17 +477,15 @@ public class TicketSystem {
     }
 
     // print the report
-    private void printReport(String []files) throws IOException{
+    private void printReport() throws IOException{
         String [] auditoriumName = {"Auditorium 1", "Auditorium 2", "Auditorium 3"};
         int ticketPrice = 7;
         int totalReservedSeats = 0;
         int totalOpenSeats = 0;
         int moneyEarn;
         int totalMoneyEarn = 0;
-        for (int i = 0; i < files.length; i++){
-            String file = files[i];
-
-            int []count = countSeats(file);
+        for (int i = 1; i < 4; i++){
+            int []count = countSeats("A" + Integer.toString(i) + ".txt");
             moneyEarn = count[1] * ticketPrice;
             totalMoneyEarn += moneyEarn;
             totalOpenSeats +=count[0];
