@@ -1,0 +1,69 @@
+CHAPTER 10: OBJECT-ORIENTED THINKING
+
+10.2 Class Abstraction and Encapsulation
+	* Class abstraction is the separation of class implementation from the use of a class. The details of implementation are encapsulated and hidden from the user. This is known as class encapsulation.
+	* class abstraction separates class implementation from how the class is used
+	* The collection of methods and fields that are accessible from outside the class, together with the description of how these members are expected to behave, serves as the class’s contract.
+
+10.3 Thinking in Objects
+	* The procedural paradigm focuses on designing methods. The object-oriented paradigm couples data and methods together into objects. Software design using the object-oriented paradigm focuses on objects and operations on objects.
+	* In procedural programming, data and operations on the data are separate, and this meth- odology requires passing data to methods.
+	* Object-oriented programming places data and the operations that pertain to them in an object.
+
+10.4 Class Relationships
+	* To design classes, you need to explore the relationships among classes. The common relationships among classes are association, aggregation, composition, and inheritance.
+
+	* Association is a general binary relationship that describes an activity between two classes.
+	For example, a student taking a course is an association between the Student class and the Course class, and a faculty member teaching a course is an association between the Faculty class and the Course class. 
+
+	* Aggregation is a special form of association that represents an ownership relationship between two objects. Aggregation models has-a relationships. The owner object is called an aggregating object, and its class is called an aggregating class. The subject object is called an aggregated object, and its class is called an aggregated class.
+
+	* An object can be owned by several other aggregating objects. If an object is exclusively owned by an aggregating object, the relationship between the object and its aggregating object is referred to as a composition.
+
+10.7 Processing Primitive Data Type Values as Objects
+	* A primitive type value is not an object, but it can be wrapped in an object using a wrapper class in the Java API.
+
+10.8 Automatic Conversion between Primitive Types and Wrapper Class Types
+	* A primitive type value can be automatically converted to an object using a wrapper class, and vice versa, depending on the context.
+	* The compiler will automatically box a primitive value that appears in a context requir- ing an object, and will unbox an object that appears in a context requiring a primitive value. This is called autoboxing and autounboxing.
+
+	1 Integer[] intArray = {1, 2, 3};
+	2 System.out.println(intArray[0] + intArray[1] + intArray[2]);
+	Inline1,theprimitivevalues1,2,and3areautomaticallyboxedintoobjectsnew Integer(1), new Integer(2),andnew Integer(3).Inline2,theobjectsintArray[0],intArray[1], and intArray[2] are automatically unboxed into int values that are added together.
+
+10.9 The BigInteger and BigDecimal Classes 
+	* The BigInteger and BigDecimal classes can be used to represent integers or
+decimal numbers of any size and precision.
+
+10.10 The String Class
+	* A String object is immutable: Its content cannot be changed once the string is created.
+	* charAt(index) method to obtain a character at the specified index from a string, 
+	the length() method to return the size of a string, 
+	the substring method to return a substring in a string, and 
+	the indexOf and lastIndexOf methods to return the first or last index of a matching character or a substring. 
+
+	10.10.5 Conversion between Strings and Arrays
+	* Strings are not arrays, but a string can be converted into an array, and vice versa. To convert a string into an array of characters, use the toCharArray method.
+	char[] chars = "Java".toCharArray();
+
+	* You can also use the getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin) method to copy a substring of the string from index srcBegin to index srcEnd-1 into a character array dst starting from index dstBegin.
+	char[] dst = {'J', 'A', 'V', 'A', '1', '3', '0', '1'};
+	"CS3720".getChars(2, 6, dst, 4);
+	Thus,dstbecomes{'J', 'A', 'V', 'A', '3', '7', '2', '0'}.
+
+	* To convert an array of characters into a string, use the String(char[]) constructor or the valueOf(char[]) method.
+	String str = new String(new char[]{'J', 'a', 'v', 'a'});
+The next statement constructs a string from an array using the valueOf method. String str = String.valueOf(new char[]{'J', 'a', 'v', 'a'});
+
+StringBuilder stringBuilder = new StringBuilder(); 
+stringBuilder.append("Welcome"); 
+stringBuilder.append(' '); 
+stringBuilder.append("to");
+stringBuilder.append(' '); 
+stringBuilder.append("Java");
+stringBuilder.insert(11, "HTML and ");
+
+stringBuilder.delete(8, 11) changes the builder to Welcome Java. 
+stringBuilder.deleteCharAt(8) changes the builder to Welcome o Java. 
+stringBuilder.reverse() changes the builder to avaJ ot emocleW. 
+stringBuilder.replace(11, 15, "HTML") changes the builder to Welcome to HTML. stringBuilder.setCharAt(0, 'w') sets the builder to welcome to Java.

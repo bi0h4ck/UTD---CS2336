@@ -1,0 +1,53 @@
+CHAPTER 6: METHOD
+6.1 Intro
+	* Methods can be used to define reusable code and organize and simplify coding
+
+6.2 Defining a method
+	* a method definition consists of its method name, parameters, return value type, and body
+	* method header specifies the modifiers, return value type, method name, and parameters
+	* formal parameters/parameters -> variables defined in the method header
+	* parameter list -> method's type, order, and number of parameters
+	* method signature -> method name and the parameter list
+
+6.3 Calling a method
+	* calling a method executes the code in the method
+	* Every time a method is invoked -> the system creates an activation record (activation frame) that stores parameters and variables for the method and places the activation recored in an area of memmory known as a call stack.
+	* call stack -> an execution stack, runtime stack, or machine stack.
+	* When a method finishes its work and returns to its caller, its activation record is removed from the call stack
+	* last-in first-out fashion
+
+6.5 Passing arguments by values
+	* parameter order association -> provides arguments that's in the same order as their respective parameters in the method signature.
+
+6.6 Modularizing code
+	* makes the code easy to maintain and debug and enables the code to be reused
+
+6.8 Overloading methods
+	* enable you to define the methods with the same name as long as their signatures are different
+
+6.9 The scope of variables
+	* is the part of the program where the variable can be referenced
+	* local variable -> variable defined inside a method
+
+6.11 Method abstraction and stepwise refinement
+	Method abstraction is achieved by separating the use of a method from its implementation.
+	*Stubs— a simple but incomplete version of a method—can be used for the methods waiting to be implemented.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,95 @@
+CHAPTER 9: OBJECTTS AND CLASSES
+
+9.2 Defining classes for objects
+	* A class defines the properties and behaviors for objects.
+	* The state of an object (also known as its properties or attributes) is represented by data fields with their current values.
+	* The behavior of an object (also known as its actions) is defined by methods.
+	* A class is a template, blue- print, or contract that defines what an object’s data fields and methods will be. An object is an instance of a class.
+	* Classes are definitions for objects and objects are created from classes.
+	* You can put the two classes into one file, but only one class in the file can be a public class. Furthermore, the public class must have the same name as the file name. 
+
+9.4 Constructing objects using constructors
+	* A constructor is invoked to create an object using the new operator. 
+	* Constructors are a special kind of method. They have three peculiarities:
+		■ A constructor must have the same name as the class itself.
+		■ Constructors do not have a return type—not even void.
+		■ Constructors are invoked using the new operator when an object is created. Constructors play the role of initializing objects.
+	* A class may be defined without constructors. In this case, a public no-arg constructor with an empty body is implicitly defined in the class. This constructor, called a default constructor, is provided automatically only if no constructors are explicitly defined in the class.
+
+9.5 Accessing objects via reference variables
+	* After an object is created, its data can be accessed and its methods can be invoked using the dot operator (.), also known as the object member access operator:
+		■ objectRefVar.dataField references a data field in the object.
+		■ objectRefVar.method(arguments) invokes a method on the object.
+	
+9.6 Using classes from Java library
+	* Date
+java.util.Date date = new java.util.Date(); 
+System.out.println("The elapsed time since Jan 1, 1970 is " +
+		date.getTime() + " milliseconds"); 
+System.out.println(date.toString());
+
+displays the output like this:
+  The elapsed time since Jan 1, 1970 is 1324903419651 milliseconds
+  Mon Dec 26 07:43:39 EST 2011
+
+	* Random
+	Random random1 = new Random(3); 
+	System.out.print("From random1: "); 
+	for (int i = 0; i < 10; i++)
+	System.out.print(random1.nextInt(1000) + " ");
+
+	output:
+	From random1: 734 660 210 581 128 202 549 564 459 961
+
+	*  Point2D class in the javafx.geometry package
+
+9.7 Static variables, constants, and methods
+	* A static variable is shared by all objects of the class. A static method cannot access instance members of the class.
+	* An instance variable is tied to a specific instance of the class; it is not shared among objects of the same class.
+
+	Circle circle1 = new Circle(); 
+	Circle circle2 = new Circle(5);
+The radius in circle1 is independent of the radius in circle2 and is stored in a different memory location. Changes made to circle1’s radius do not affect circle2’s radius, and vice versa.
+
+	* If you want all the instances of a class to share data, use static variables, also known as class variables. Static variables store values for the variables in a common memory location.
+
+	* Static methods can be called without creating an instance of the class.
+
+	static int numberOfObjects;
+	static int getNumberObjects() { 
+		return numberOfObjects;
+	}
+
+9.8 Visibility modifiers
+	* Visibility modifiers can be used to specify the visibility of a class and its members.
+	* public visibility modifier -> can be accessed from any other classes. 
+	* If no visibility modifier is used -> by default, accessible by any class in the same package ->  package-private or package-access.
+
+9.9 Data Field Encapsulation
+	* Making data fields private protects data and makes the class easy to maintain.
+	* To prevent direct modifications of data fields, you should declare the data fields private, using the private modifier. This is known as data field encapsulation.
+
+9.10 Passing Objects to Methods
+	* Passing an object to a method is to pass the reference of the object
+
+9.11 Array of Objects
+	* An array can hold objects as well as primitive type values.
+
+9.12 Immutable Objects and Classes
+	* You can define immutable classes to create immutable objects. The contents of immutable objects cannot be changed.
+	* If a class is immutable, then all its data fields must be private and it cannot contain public setter methods for any data fields. A class with all private data fields and no mutators is not necessarily immutable. 
+	* For a class to be immutable, it must meet the following requirements:
+		■ All data fields must be private.
+		■ There can’t be any mutator methods for data fields.
+		■ No accessor methods can return a reference to a data field that is mutable.
+
+9.13 The Scope of Variables
+	* The scope of instance and static variables is the entire class, regardless of where the variables are declared.
+	* Instance and static variables in a class are referred to as the class’s variables or data fields. 
+	* A variable defined inside a method is referred to as a local variable. 
+	* If a local variable has the same name as a class’s variable, the local variable takes precedence and the class’s variable with the same name is hidden. 
+
+9.14 The this reference
+	* this -> refers to the object itself. It can also be used inside a constructor to invoke another constructor of the same class
+	
+
