@@ -25,56 +25,82 @@ public class ProcessOrder {
         File preferredFileName = new File("Sample_preferred.txt");
         File customerFileName = new File("Sample_customer.txt");
         //Check if the preferred Customer file exists, if not, create one
-        File preferredCustomerFileName = createPreferredFileIfNotExists(preferredFileName);
+        //File preferredCustomerFileName = createPreferredFileIfNotExists(preferredFileName);
 
 
         //Read files into array of lines of string
         String[] arrayOfCustomerLines = readFileIntoArrayOfLine(customerFileName);
-        String[] arrayOfPreferredLines = readFileIntoArrayOfLine(preferredCustomerFileName);
+        String[] arrayOfPreferredLines;
+        //String[] arrayOfPreferredLines = readFileIntoArrayOfLine(preferredCustomerFileName);
         String[] arrayOfTransactionLines = readFileIntoArrayOfLine(transactionFileName);
 
         //put each line into an array of object of Customer/Preferred
         Customer[] arrayOfCustomers = readCustomerFile(arrayOfCustomerLines);
-        PreferredCustomer[] arrayOfPreferred = readPreferredFile(arrayOfPreferredLines);
+        PreferredCustomer[] arrayOfPreferred;
+        //PreferredCustomer[] arrayOfPreferred = readPreferredFile(arrayOfPreferredLines);
 
+        Result result = new Result(arrayOfCustomerLines, arrayOfCustomerLines);
+        int isCustomer;
+        int isPreferred;
+        boolean preferredFileExists = preferredFileName.exists();;
 
+        if (preferredFileExists) {
+            for (int count = 0; count < arrayOfTransactionLines.length; count++) {
+                //get customer ID of the transaction
+                int ID = ID(arrayOfTransactionLines[count]);
 
+                // calculate how much the customer spent
+                double amountSpent = amountSpent(arrayOfTransactionLines[count]);
 
-        Result result = new Result(arrayOfCustomerLines, arrayOfPreferredLines);
+                arrayOfPreferredLines = readFileIntoArrayOfLine(preferredFileName);
+                arrayOfPreferred = readPreferredFile(arrayOfPreferredLines);
+                isCustomer = isCustomer(arrayOfCustomers, ID);
+                isPreferred = isPreferred(arrayOfPreferred, ID);
+                if (isCustomer < 0 && isPreferred >= 0) {
+                    processPreferred(arrayOfPreferred, isPreferred, amountSpent, preferredFileName);
+                } else if (isCustomer >= 0 && isPreferred < 0) {
+                    //arrayOfCustomers[isCustomer].updateAmountSpent(amountSpent);
+                    result = processCustomer(arrayOfCustomers, arrayOfCustomerLines, arrayOfPreferredLines,
+                            isCustomer, amountSpent);
+                }
+            }
+            writeToFile(result.newArrayOfCustomerLines, customerFileName);
+            writeToFile(result.newArrayOfPreferredLines, preferredFileName);
 
-        // loop through each transaction to process the transaction
-        for (int count = 0; count < arrayOfTransactionLines.length; count++) {
+        }
+        else if ((!preferredFileExists) || preferredFileName.length() <= 0) {
+            if(!preferredFileExists){
+                preferredFileName.createNewFile();
+            }
 
-            //get customer ID of the transaction
-            int ID = ID(arrayOfTransactionLines[count]);
+            arrayOfPreferredLines = new String[1];
 
-            // calculate how much the customer spent
-            double amountSpent = amountSpent(arrayOfTransactionLines[count]);
+            for (int count = 0; count < arrayOfTransactionLines.length; count++) {
+                //get customer ID of the transaction
+                int ID = ID(arrayOfTransactionLines[count]);
 
-            //get the index of the customer in the regular/preferred Customer array
-            int isCustomer = isCustomer(arrayOfCustomers, ID);
-            int isPreferred = isPreferred(arrayOfPreferred, ID);
-
-
-            // If the customer belongs to preferred customer, call the processPreferred function
-            if (isCustomer < 0 && isPreferred >= 0 && preferredCustomerFileName.length() > 0) {
-                processPreferred(arrayOfPreferred, isPreferred, amountSpent, preferredCustomerFileName);
-
-                // If the customer belongs to regular customer, call the processCustomer function
-            } else if (isCustomer >= 0 && isPreferred < 0) {
+                // calculate how much the customer spent
+                double amountSpent = amountSpent(arrayOfTransactionLines[count]);
+                isCustomer = isCustomer(arrayOfCustomers, ID);
+                //arrayOfCustomers[isCustomer].updateAmountSpent(amountSpent);
                 result = processCustomer(arrayOfCustomers, arrayOfCustomerLines, arrayOfPreferredLines,
                         isCustomer, amountSpent);
-                writeToFile(result.newArrayOfCustomerLines, customerFileName);
-                writeToFile(result.newArrayOfPreferredLines, preferredCustomerFileName);
             }
+            if(preferredFileName.length() <= 0){
+                preferredFileName.delete();
+            }
+            writeToFile(result.newArrayOfCustomerLines, customerFileName);
+
         }
+
+
 
 
 
     }
 
     // Result class has newArrayOfPreferredLines and newArrayOfCustomerLines
-    protected class Result{
+     protected class Result{
         protected String[] newArrayOfPreferredLines;
         protected String[] newArrayOfCustomerLines;
 
@@ -82,15 +108,6 @@ public class ProcessOrder {
             this.newArrayOfCustomerLines = newArrayOfCustomerLines;
             this.newArrayOfPreferredLines = newArrayOfPreferredLines;
         }
-    }
-
-    public File createPreferredFileIfNotExists(File preferredFileName) throws IOException {
-        if(!preferredFileName.exists()){
-            File newFile = new File("Sample_preferred.txt");
-            newFile.createNewFile();
-            return newFile;
-        } else
-            return preferredFileName;
     }
 
     // Write the updated array of customer into a temporary file,
