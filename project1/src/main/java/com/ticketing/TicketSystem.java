@@ -37,12 +37,13 @@ public class TicketSystem {
     public void run() throws Exception {
         boolean backToMainMenu = false;
         boolean wantToReserve;
+        String [] files = {"A1.txt", "A2.txt", "A3.txt"};
         do {
             Scanner scanner = new Scanner(System.in);
 
             //Show the main menu and get user input
-            String getUserInput = Integer.toString(showMainMenu(scanner)).trim();
-            String fileName = "A"+getUserInput+".txt";
+            int getUserInput = showMainMenu(scanner);
+            String fileName = files[getUserInput - 1];
             //Read file, get number of row, number of column of that file
             String path = getClass().getClassLoader().getResource(fileName).getPath();
             FileReader fileReader = new FileReader(path);
@@ -157,7 +158,7 @@ public class TicketSystem {
         } while (backToMainMenu);
 
         //print report
-        printReport();
+        printReport(files);
     }
 
     //print out the recommended seats
@@ -456,7 +457,8 @@ public class TicketSystem {
 
     //counting open seats and reserved seats
     private int[] countSeats(String fileName) throws IOException {
-        FileReader fileReader = new FileReader(fileName);
+        String path = getClass().getClassLoader().getResource(fileName).getPath();
+        FileReader fileReader = new FileReader(path);
 
         int col = numOfColumn(fileName);
         int row = numOfRow(fileReader);
@@ -477,15 +479,17 @@ public class TicketSystem {
     }
 
     // print the report
-    private void printReport() throws IOException{
+    private void printReport(String []files) throws IOException{
         String [] auditoriumName = {"Auditorium 1", "Auditorium 2", "Auditorium 3"};
         int ticketPrice = 7;
         int totalReservedSeats = 0;
         int totalOpenSeats = 0;
         int moneyEarn;
         int totalMoneyEarn = 0;
-        for (int i = 1; i < 4; i++){
-            int []count = countSeats("A" + Integer.toString(i) + ".txt");
+        for (int i = 0; i < files.length; i++){
+            String file = files[i];
+
+            int []count = countSeats(file);
             moneyEarn = count[1] * ticketPrice;
             totalMoneyEarn += moneyEarn;
             totalOpenSeats +=count[0];
