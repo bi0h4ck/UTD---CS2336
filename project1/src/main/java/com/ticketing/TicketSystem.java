@@ -1,4 +1,4 @@
-package ticketing;
+package com.ticketing;
 
 import java.io.*;
 import java.util.InputMismatchException;
@@ -44,10 +44,9 @@ public class TicketSystem {
             //Show the main menu and get user input
             int getUserInput = showMainMenu(scanner);
             String fileName = files[getUserInput - 1];
-
             //Read file, get number of row, number of column of that file
-            FileReader fileReader = new FileReader(fileName);
-
+            String path = getClass().getClassLoader().getResource(fileName).getPath();
+            FileReader fileReader = new FileReader(path);
             int row = numOfRow(fileReader);
             System.out.println("row: " + row);
             int col = numOfColumn(fileName);
@@ -260,8 +259,9 @@ public class TicketSystem {
     }
 
     // read the .txt file and store the seat info into 2D array of String
-    private String[][] readAuditorium(String fileName, int row, int col) throws IOException{
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+    private String[][] readAuditorium(String fileName, int row, int col) throws IOException {
+        String path = getClass().getClassLoader().getResource(fileName).getPath();
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
         String [][]seats = new String[row][col];
         String []rowOfSeat;
         int mRow = 0;
@@ -287,7 +287,7 @@ public class TicketSystem {
     }
 
     // get number of row
-    private int numOfRow(FileReader fileReader) throws IOException {
+    private int numOfRow(Reader fileReader) throws IOException {
         LineNumberReader lnr = new LineNumberReader(fileReader);
         lnr.skip(Long.MAX_VALUE);
         int lineNumber = lnr.getLineNumber();
@@ -300,7 +300,8 @@ public class TicketSystem {
 
     // get number of column
     private int numOfColumn(String fileName) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+        String path = getClass().getClassLoader().getResource(fileName).getPath();
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
         String line;
         int column = 0;
         while ((line = bufferedReader.readLine()) != null) {
@@ -456,7 +457,8 @@ public class TicketSystem {
 
     //counting open seats and reserved seats
     private int[] countSeats(String fileName) throws IOException {
-        FileReader fileReader = new FileReader(fileName);
+        String path = getClass().getClassLoader().getResource(fileName).getPath();
+        FileReader fileReader = new FileReader(path);
 
         int col = numOfColumn(fileName);
         int row = numOfRow(fileReader);
