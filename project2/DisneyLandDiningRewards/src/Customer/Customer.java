@@ -1,7 +1,8 @@
 package Customer;
 
 /**
- * Created by diempham on 2/11/17.
+ * Created by Diem Pham on 2/11/17.
+ * dtp160130
  */
 public class Customer {
     public String firstName;

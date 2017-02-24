@@ -9,7 +9,7 @@ import java.util.List;
 import static java.lang.Math.pow;
 
 /**
- * Created by diempham on 2/11/17.
+ * Created by Diem Pham on 2/11/17.
  * dtp160130
  */
 public class ProcessOrder {
@@ -44,7 +44,7 @@ public class ProcessOrder {
         //Check whether the preferred exists
         boolean preferredFileExists = preferredFileName.exists();
 
-        //If the preferred file exists, call the processOrderWhilePreferredExist function
+        //If the preferred file exists
         if (preferredFileExists) {
             arrayOfPreferredLines = readFileIntoArrayOfLine(preferredFileName);
             arrayOfPreferred = readPreferredFile(arrayOfPreferredLines);
@@ -71,7 +71,7 @@ public class ProcessOrder {
             writeToFile(result.newArrayOfCustomerLines, customerFileName);
             writeToFile(result.newArrayOfPreferredLines, preferredFileName);
         }
-        //If the preferred file does not exist or exist but is empty, call the processOrderWhilePreferredNotExist function
+        //If the preferred file does not exist or exist but is empty
         else if ((!preferredFileExists) || preferredFileName.length() <= 0) {
             arrayOfPreferredLines = new String[1];
             //If the preferred file does not exist, create one

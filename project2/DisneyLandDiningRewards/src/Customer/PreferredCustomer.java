@@ -1,9 +1,10 @@
 package Customer;
 
 /**
- * change discount to int
- * Created by diempham on 2/11/17.
+ * Created by Diem Pham on 2/11/17.
+ * dtp160130
  */
+
 public class PreferredCustomer extends Customer {
     public double discountPercentage;
 
