@@ -1,0 +1,242 @@
+CHAPTER 12: EXCEPTION HANDLING AND TEXT I/O
+
+12.1 Introduction
+	* Exception handling enables a program to deal with exceptional situations and continue its normal execution.
+	* An exception is an object that represents an error or a condition that prevents execution from proceeding normally.
+	* Runtime errors occur while a program is running if the JVM detects an operation that is impossible to carry out. 
+
+12.2 Exception-Handling Overview
+	* Exceptions are thrown from a method. The caller of the method can catch and handle the exception.
+
+	QuotientWithException.java
+
+import java.util.Scanner;
+
+public class QuotientWithException {
+	public static int quotient(int number1, int number2) {
+		if (number2 == 0)
+			throw new ArithmeticException("Divisor cannot be zero");
+
+		return number1 / number2;
+	public static void main(String[] args) {
+		Scanner input = new Scanner(System.in);
+  		// Prompt the user to enter two integers
+		System.out.print("Enter two integers: "); 
+		int number1 = input.nextInt();
+		int number2 = input.nextInt();
+		try {
+			int result = quotient(number1, number2);
+			System.out.println(number1 + " / " + number2 + " is " + result);
+ 		catch (ArithmeticException ex) { 
+ 		System.out.println("Exception: an integer " + "cannot be divided by zero ");
+ }
+	System.out.println("Execution continues ...");  
+	}
+}
+
+output:
+Enter two integers: 5 0
+Exception: an integer cannot be divided by zero
+Execution continues ...
+
+
+	* The identifier ex in the catch–block header
+		catch (ArithmeticException ex)
+acts very much like a parameter in a method. Thus, this parameter is referred to as a catch–block parameter. The type (e.g., ArithmeticException) preceding ex specifies what kind of exception the catch block can catch. Once the exception is caught, you can access the thrown value from this parameter in the body of a catch block.
+
+	* a template for a try-throw-catch block may look like this:
+	try {
+		Code to run;
+		A statement or a method that may throw an exception; More code to run;
+	}
+	catch (type ex) {
+    	Code to process the exception;
+  	}
+
+12.3 Exception Types
+	* Exceptions are objects, and objects are defined using classes. The root class for exceptions is java.lang.Throwable.
+	* The class names Error, Exception, and RuntimeException are somewhat con- fusing. All three of these classes are exceptions, and all of the errors occur at runtime.
+	* The Throwable class is the root of exception classes. All Java exception classes inherit directly or indirectly from Throwable. You can create your own exception classes by extend- ing Exception or a subclass of Exception.
+	* The exception classes can be classified into three major types: system errors, exceptions, and runtime exceptions.
+
+	** System errors are thrown by the JVM and are represented in the Error class. The Error class describes internal system errors, though such errors rarely occur.
+		LinkageError
+		VirtualMachineError
+
+	** Exceptions are represented in the Exception class, which describes errors caused by your program and by external circumstances.	
+		ClassNotFoundException
+		IOException
+		subclasses of IOException are InterruptedIOException, EOFException (EOF is short for End of File), and FileNotFoundException.
+
+	** Runtime exceptions are represented in the RuntimeException class, which describes programming errors, such as bad casting, accessing an out-of-bounds array, and numeric errors. Runtime exceptions are generally thrown by the JVM.	
+		ArithmeticException - Dividing an integer by zero. 
+		NullPointerException - Attempt to access an object through a null reference variable.
+		IndexOutOfBoundsException - Index to an array is out of range.
+		IllegalArgumentException - A method is passed an argument that is illegal or inappropriate.
+
+12.4 More on Exception Handling
+	* A handler for an exception is found by propagating the exception backward through a chain of method calls, starting from the current method.
+
+	12.4.1 Declaring Exceptions
+	* Every method must state the types of checked exceptions it might throw. This is known as declaring exceptions
+
+	public void myMethod()throws Exception1, Exception2, ..., ExceptionN
+
+	12.4.2 Throwing Exceptions
+	* A program that detects an error can create an instance of an appropriate exception type and throw it. This is known as throwing an exception.
+
+	IllegalArgumentException ex = new IllegalArgumentException("Wrong Argument");
+		throw ex;
+
+	12.4.3 Catching Exceptions
+	try {
+		statements; // Statements that may throw exceptions
+	}
+	catch (Exception1 exVar1) {
+    	handler for exception1;
+  	}
+	catch (Exception2 exVar2) { 
+	handler for exception2;
+	}
+...
+	catch (ExceptionN exVarN) {
+    	handler for exceptionN;
+  }
+
+  * The code that handles the exception is called the exception handler; it is found by propagating the exception backward through a chain of method calls, starting from the current method.
+  * The order in which exceptions are specified in catch blocks is important. A compile error will result if a catch block for a superclass type appears before a catch block for a subclass type. 
+
+  	12.4.4 Getting Information from Exceptions
+  	* Throwable is the root class for all exception objects.
+  	* The getStackTrace() method provides programmatic access to the stack trace information printed by printStackTrace().
+  	* use the printStackTrace(), getMessage(), toString(), and getStackTrace() methods to obtain information from exception objects.
+
+  	TestException.java  
+  	public class TestException {
+		public static void main(String[] args) { 
+			try {
+			System.out.println(sum(new int[] {1, 2, 3, 4, 5}));
+			}
+			catch (Exception ex) {
+				ex.printStackTrace(); 
+				System.out.println("\n" + ex.getMessage()); 
+				System.out.println("\n" + ex.toString());
+
+				//getStackTrace()
+				System.out.println("\nTrace Info Obtained from getStackTrace"); StackTraceElement[] traceElements = ex.getStackTrace();
+				for (int i = 0; i < traceElements.length; i++) {
+					System.out.print("method " + traceElements[i].getMethodName()); System.out.print("(" + traceElements[i].getClassName() + ":"); System.out.println(traceElements[i].getLineNumber() + ")");
+				}
+    		}
+		}
+		private static int sum(int[] list) {
+			int result = 0;
+			for (int i = 0; i <= list.length; i++)
+				result += list[i]; 
+			return result;
+		}
+	}
+
+12.5 The finally Clause
+	* The finally clause is always executed regardless whether an exception occurred or not.
+	try { 
+	statements;
+	}
+	catch (TheException ex) {
+    handling ex;
+  	}
+	finally { finalStatements;
+
+ 12.7 Rethrowing Exceptions
+	* Java allows an exception handler to rethrow the exception if the handler cannot process the exception or simply wants to let its caller be notified of the exception.
+	
+	try { 
+		statements;
+	}
+	catch (TheException ex) {
+    	perform operations before exits;
+		throw ex; 
+	}
+
+	* The statement throw ex rethrows the exception to the caller so that other handlers in the caller get a chance to process the exception ex.
+
+12.8 Chained Exceptions
+	* Throwing an exception along with another exception forms a chained exception.
+
+12.9 Defining Custom Exception Classes
+	* You can define a custom exception class by extending the java.lang.Exception class.
+
+12.10 The File Class
+	* The File class contains the methods for obtaining the properties of a file/directory
+and for renaming and deleting a file/directory.
+	* The File class is intended to provide an abstraction that deals with most of the machine- dependent complexities of files and path names in a machine-independent fashion. The File class contains the methods for obtaining file and directory properties and for renaming and deleting files and directories
+	* use the File class’s isDirectory() method to check whether the object represents a directory, and the isFile() method to check whether the object represents a file.
+
+12.11 File Input and Output
+	* Use the Scanner class for reading text data from a file and the PrintWriter class for writing text data to a file.
+	* The java.io.PrintWriter class can be used to create a file and write data to a text file.
+
+	WriteDataWithAutoClose.java 
+public class WriteDataWithAutoClose {
+	public static void main(String[] args) throws Exception { 
+		java.io.File file = new java.io.File("scores.txt");
+		if (file.exists()) {
+			System.out.println("File already exists"); 
+			System.exit(0);
+		}
+		try (
+        // Create a file
+		java.io.PrintWriter output = new java.io.PrintWriter(file);
+		 ) {
+        // Write formatted output to the file
+ 			output.print("John T Smith ");
+ 			output.println(90);
+ 			output.print("Eric K Jones ");
+ 			output.println(85);
+ 		}  
+ 	}  
+ }
+A resource is declared and created followed by the keyword try. Note that the resources are enclosed in the parentheses. The resources must be a subtype of AutoCloseable such as a PrinterWriter that has the close() method. A resource must be declared and created in the same statement and multiple resources can be declared and created inside the parentheses. The statements in the block immediately following the resource declaration use the resource. After the block is finished, the resource’s close() method is automatically invoked to close the resource. Using try-with-resources can not only avoid errors but also make the code simpler.
+
+12.11.3 Reading Data Using Scanner
+
+Scanner input = new Scanner(System.in);
+
+To read from a file, create a Scanner for a file, as follows:
+Scanner input = new Scanner(new File(filename));
+
+	* The nextByte(), nextShort(), nextInt(), nextLong(), nextFloat(), next- Double(), and next() methods are known as token-reading methods, because they read tokens separated by delimiters. By default, the delimiters are whitespace characters. You can use the use Delimiter(String regex)method to set a new pattern for delimiters.
+
+12.12 Reading Data from the Web
+	* Just like you can read data from a file on your computer, you can read data from a file on the Web.
+
+	For an application program to read data from a URL, you first need to create a URL object
+using the java.net.URL class with this constructor:
+
+public URL(String spec) throws MalformedURLException
+try{
+	 URL url = new URL("http://www.google.com/index.html"); 
+} catch (MalformedURLException ex) { 
+	ex.printStackTrace();
+}
+
+* A MalformedURLException is thrown if the URL string has a syntax error. For example, the URL string “http:www.google.com/index.html” would cause a MalformedURLException runtime error because two slashes (//) are required after the colon (:). Note that the http:// prefix is required for the URL class to recognize a valid URL. It would be wrong if you replace line 2 with the following code:
+URL url = new URL("www.google.com/index.html");
+
+After a URL object is created, you can use the openStream() method defined in the URL class
+to open an input stream and use this stream to create a Scanner object as follows: 
+
+Scanner input = new Scanner(url.openStream());
+Now you can read the data from the input stream just like from a local file.
+
+
+
+
+
+
+
+
+
+
+
+
