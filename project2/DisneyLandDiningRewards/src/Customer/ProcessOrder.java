@@ -26,9 +26,9 @@ public class ProcessOrder {
 
     public void run () throws IOException {
         //Wrap file name into File
-        File transactionFileName = new File("Sample_transactions.txt");
-        File preferredFileName = new File("Sample_preferred.txt");
-        File customerFileName = new File("Sample_customer.txt");
+        File transactionFileName = new File("orders.dat");
+        File preferredFileName = new File("preferred.dat");
+        File customerFileName = new File("customer.dat");
 
         //Read files into array of lines of string
         String[] arrayOfCustomerLines = readFileIntoArrayOfLine(customerFileName);
