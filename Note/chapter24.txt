@@ -1,0 +1,112 @@
+CHAPTER 24: IMPLEMENTING LISTS, STACKS, QUEUES, AND PRIORITY QUEUES.
+24.2 Common Features for Lists
+Common features of lists are defined in the List interface.
+A list is a popular data structure for storing data in sequential order—for example, a list of students, a list of available rooms, a list of cities, a list of books. You can perform the follow- ing operations on a list:
+■ Retrieve an element from the list.
+■ Insert a new element into the list.
+■ Delete an element from the list.
+■ Find out how many elements are in the list.
+■ Determine whether an element is in the list.
+■ Check whether the list is empty.
+
+24.3 Array Lists
+An array list is implemented using an array.
+An array is a fixed-size data structure. Once an array is created, its size cannot be changed. Nevertheless, you can still use arrays to implement dynamic data structures. The trick is to create a larger new array to replace the current array, if the current array cannot hold new elements in the list.
+
+24.4 Linked Lists
+A linked list is implemented using a linked structure.
+
+24.4.1 Nodes
+In a linked list, each element is contained in an object, called the node. When a new element is added to the list, a node is created to contain it. Each node is linked to its next neighbor
+
+A node can be created from a class defined as follows:
+class Node<E> { 
+	E element; 
+	Node<E> next;
+	public Node(E e) { 
+	element = e;
+	} 
+}
+
+empty list
+Node<String> head = null; 
+Node<String> tail = null;
+
+head = new Node<>("Chicago"); 
+tail = head;
+//Append the first node to the list. Both head and tail point to this node.
+
+tail.next = new Node<>("Denver");
+tail = tail.next;
+//Append the second node to the list. Tail now points to this new node.
+
+For example, you can write the following loop to traverse all the nodes in the list.
+ Node current = head;
+ while (current != null) {
+ 	System.out.println(current.element); 
+ 	current = current.next;
+}
+
+24.4.2 The MyLinkedList Class
+The MyLinkedList class uses a linked structure to implement a dynamic list. It extends MyAbstractList.
+MyLinkedList<E>
+-head: Node<E> 
+-tail: Node<E>
++MyLinkedList() 
++MyLinkedList(elements: E[]) 
++addFirst(e: E): void 
++addLast(e: E): void 
++getFirst(): E
++getLast(): E 
++removeFirst(): E 
++removeLast(): E
+
+24.4.4 MyArrayList vs. MyLinkedList
+Both MyArrayList and MyLinkedList can be used to store a list. MyArrayList is imple- mented using an array and MyLinkedList is implemented using a linked list. The overhead of MyArrayList is smaller than that of MyLinkedList. However, MyLinkedList is more efficient if you need to insert elements into and delete elements from the beginning of the list.
+
+24.4.5 Variations of Linked Lists
+* The linked list introduced in the preceding sections is known as a singly linked list. It contains a pointer to the list’s first node, and each node contains a pointer to the next node sequentially. Several variations of the linked list are useful in certain applications.
+* A circular, singly linked list is like a singly linked list, except that the pointer of the last node points back to the first node
+* A doubly linked list contains nodes with two pointers. One points to the next node and the other to the previous node. These two pointers are conveniently called a forward pointer and a backward pointer. Thus, a doubly linked list can be traversed for- ward and backward. The java.util.LinkedList class is implemented using a doubly linked list, and it supports traversing of the list forward and backward using the ListIterator.
+* A circular, doubly linked list is like a doubly linked list, except that the forward pointer of the last node points to the first node and the backward pointer of the first pointer points to the last node.
+
+24.5 Stacks and Queues
+	* Stacks can be implemented using array lists and queues can be implemented using linked lists.
+	* A stack can be viewed as a special type of list whose elements are accessed, inserted, and deleted only from the end (top).
+	* A queue represents a waiting list. It can be viewed as a special type of list whose elements are inserted into the end (tail) of the queue, and are accessed and deleted from the beginning (head).
+	* Since the insertion and deletion operations on a stack are made only at the end of the stack, it is more efficient to implement a stack with an array list than a linked list. Since deletions are made at the beginning of the list, it is more efficient to implement a queue using a linked list than an array list. This section implements a stack class using an array list and a queue class using a linked list.
+
+	There are two ways to design the stack and queue classes:
+■ Using inheritance: You can define a stack class by extending ArrayList, and a queue class by extending LinkedList.
+■ Using composition: You can define an array list as a data field in the stack class, and
+a linked list as a data field in the queue class.
+
+Both designs are fine, but using composition is better because it enables you to define a com- pletely new stack class and queue class without inheriting the unnecessary and inappropriate methods from the array list and linked list. 
+
+GenericQueue uses a linked list to provide a first-in, first-out data structure.
+
+public class GenericQueue<E> {
+	private java.util.LinkedList<E> list = new java.util.LinkedList<>();
+ 	public void enqueue(E e) { 
+ 		list.addLast(e);
+ 	}
+ 	public E dequeue() {
+ 		return list.size();
+ 	}
+	public int getSize() {
+		return list.size();
+	}
+	@Override
+	public String toString(){
+		return "Queue: " + list.toString();
+	}
+}
+
+24.6 Priority Queues
+Priority queues can be implemented using heaps.
+
+An ordinary queue is a first-in, first-out data structure. Elements are appended to the end of the queue and removed from the beginning. In a priority queue, elements are assigned with priorities. When accessing elements, the element with the highest priority is removed first.
+
+A priority queue can be implemented using a heap, in which the root is the object with the highest priority in the queue.
+
+

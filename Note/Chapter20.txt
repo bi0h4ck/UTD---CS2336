@@ -1,0 +1,263 @@
+Chapter 20: LISTS, STACKS, QUEUES, AND PRIORITY QUEUES
+The Collection interface defines the common operations for lists, vectors, stacks, queues, priority queues, and sets.
+The Java Collections Framework supports two types of containers:
+■ One for storing a collection of elements is simply called a collection.
+■ The other, for storing key/value pairs, is called a map.
+Collections:
+■ Sets store a group of nonduplicate elements.
+■ Lists store an ordered collection of elements.
+■ Stacks store objects that are processed in a last-in, first-out fashion.
+■ Queues store objects that are processed in a first-in, first-out fashion.
+■ PriorityQueues store objects that are processed in the order of their priorities
+
+java.lang.Iterable<E>
++iterator(): Iterator<E>  Returns an iterator for the elements in this collection.
+  
+java.util.Collection<E>
++add(o: E): boolean		Adds a new element o to this collection.
++addAll(c: Collection<? extends E>): boolean 	Adds all the elements in the collection c to this collection.
++clear(): void		Removes all the elements from this collection.
++contains(o: Object): boolean 	Returns true if this collection contains the element o.
++containsAll(c: Collection<?>): boolean 	Returns true if this collection contains all the elements in c. 	.
++equals(o: Object): boolean		Returns true if this collection is equal to another collection o
++hashCode(): int 	Returns the hash code for this collection.
++isEmpty(): boolean 	Returns true if this collection contains no elements.
++remove(o: Object): boolean 	Removes the element o from this collection.
++removeAll(c: Collection<?>): boolean  	Removes all the elements in c from this collection.
++retainAll(c: Collection<?>): boolean 	Retains the elements that are both in c and in this collection. 
++size(): int 	 Returns the number of elements in this collection.
++toArray(): Object[] 	Returns an array of Object for the elements in this collection.
+  
+«interface»
+java.util.Iterator<E>
++hasNext(): boolean 	Returns true if this iterator has more elements to traverse.
++next(): E  	Returns the next element from this iterator.
++remove(): void 	Removes the last element obtained using the next method.
+ 
+Some of the methods in the Collection interface cannot be implemented in the concrete subclass. In this case, the method would throw java.lang.UnsupportedOperationException, a subclass of RuntimeException. This is a good design that you can use in your project. If a method has no meaning in the subclass, you can implement it as follows:
+
+public void someMethod() {
+	throw new UnsupportedOperationException
+	("Method not supported"); 
+}
+
+
+
+Note:
+All the concrete classes in the Java Collections Framework implement the java.lang. Cloneable and java.io.Serializable interfaces except that java.util.PriorityQueue does not implement the Cloneable interface. Thus, all instances of Cloneable except priority queues can be cloned and all instances of Cloneable can be serialized.
+
+20.3 Iterators
+	* Each collection is Iterable. You can obtain its Iterator object to traverse all the elements in the collection.
+	* Iterator is a classic design pattern for walking through a data structure without having to expose the details of how data is stored in the data structure.
+	* The iterator() method in the Iterable interface returns an instance of Iterator, which provides sequential access to the elements in the collection using the next() method. You can also use the hasNext() method to check whether there are more elements in the iterator, and the remove() method to remove the last element returned by the iterator.
+
+
+	TestIterator.java
+ import java.util.*;
+ public class TestIterator {
+ 	public static void main(String[] args) {
+ 		Collection<String> collection = new ArrayList<>();
+		collection.add("New York");
+		collection.add("Atlanta");
+		collection.add("Dallas");
+		collection.add("Madison");
+
+      	Iterator<String> iterator = collection.iterator();
+ 		while (iterator.hasNext()) {
+ 			System.out.print(iterator.next().toUpperCase() + " ");
+      	}
+      	System.out.println();
+    }
+}
+
+
+output: NEW YORK ATLANTA DALLAS MADISON
+
+
+20.4 Lists
+	* The List interface extends the Collection interface and defines a collection for storing elements in a sequential order. To create a list, use one of its two concrete classes: ArrayList or LinkedList.
+ 
+ 	java.util.Collection<E>
+	* add(index, element)method is used to insert an element at a specified index,and 
+	* addAll(index, collection) method to insert a collection of elements at as pecified index. 
+	* remove(index) method is used to remove an element at the specified index from thelist.
+	* A new element can be set at the specified index using the set(index, element) method.
+	* indexOf(element) method is used to obtain the index of the specified element’s first occurrence in the list
+	* lastIndexOf(element) method to obtain the index of itslastoccurrence.
+	* A sublist can be obtained by using the subList(fromIndex, toIndex) method.
+	* listIterator() or listIterator(startIndex) method returns an instance of ListIterator. The ListIterator interface extends the Iterator interface to add bidi- rectional traversal of the list. 
+
+	java.util.Iterator<E>
+	+add(element: E): void 
+	+hasPrevious(): boolean
+	+nextIndex(): int 
+	+previous(): E 
+	+previousIndex(): int
+	+set(element: E): void
+
+	* The AbstractList class provides a partial implementation for the List interface. The AbstractSequentialList class extends AbstractList to provide support for linked lists.
+	* If you need to support random access through an index without inserting or removing elements at the beginning of the list, ArrayList offers the most efficient collection.
+	* If, however, your application requires the insertion or deletion of elements at the beginning of the list, you should choose LinkedList. 
+	* As elements are added to an ArrayList, its capacity grows automatically. An ArrayList does not automatically shrink. You can use the trimToSize() method to reduce the array capacity to the size of the list. An ArrayList can be constructed using its no-arg constructor, ArrayList(Collection), or ArrayList(initialCapacity).
+
+	java.util.ArrayList<E>
+	+ArrayList() 	Creates an empty list with the default initial capacity.
+	+ArrayList(c: Collection<? extends E>) 	Creates an array list from an existing collection.
+	+ArrayList(initialCapacity: int) 	Creates an empty list with the specified initial capacity.
+	+trimToSize(): void 	Trims the capacity of this ArrayList instance to be the list’s current size.
+
+	java.util.LinkedList<E>
+	+LinkedList()
+	+LinkedList(c: Collection<? extends E>)
+	+addFirst(element: E): void
+	+addLast(element: E): void
+	+getFirst(): E
+	+getLast(): E
+	+removeFirst(): E
+	+removeLast(): E
+
+	A list can hold identical elements. 
+	ArrayList and LinkedList operate similarly. The critical difference between them pertains to internal implementation, which affects their performance. ArrayList is efficient for retrieving ele- ments and LinkedList is efficient for inserting and removing elements at the beginning of the list. Both have the same performance for inserting and removing elements in the middle or at the end of the list.
+
+	* Java provides the static asList method for creating a list from a variable-length list of arguments. 
+	List<String> list1 = Arrays.asList("red", "green", "blue");
+
+	20.5 The Comparator Interface
+	* Comparator can be used to compare the objects of a class that doesn’t implement Comparable.
+	* The Comparable interface defines the compareTo method, which is used to compare two elements of the same class that implement the Comparable interface.
+	* What if the elements’ classes do not implement the Comparable interface? Can these elements be compared? You can define a comparator to compare the elements of different classes. To do so, define a class that implements the java.util.Comparator<T> interface and overrides its compare method.
+	
+	public int compare(T element1, T element2)
+	Returns a negative value if element1 is less than element2, a positive value if element1 is greater than element2, and zero if they are equal.
+
+
+	GeometricObjectComparator.java
+ import java.util.Comparator;
+ public class GeometricObjectComparator implements Comparator<GeometricObject>, java.io.Serializable { 
+ 	public int compare(GeometricObject o1, GeometricObject o2) {
+		double area1 = o1.getArea(); 
+		double area2 = o2.getArea();
+		if (area1 < area2) 
+			return -1;
+		else if (area1 == area2) 
+			return 0;
+		else
+			return 1;
+    }
+ }
+
+ 20.6 Static Methods for Lists and Collections
+	* The Collections class contains static methods to perform common operations in a collection and a list.
+	* The Collections class contains the sort, binarySearch, reverse, shuffle, copy, and fill methods for lists, and max, min, disjoint, and frequency methods for collections.
+
+	java.util.Collections
+	+sort(list: List): void
+	+sort(list: List, c: Comparator): void
+	+binarySearch(list: List, key: Object): int 	Searches the key in the sorted list using binary search.
+	+binarySearch(list: List, key: Object, c: Comparator): int 	Searches the key in the sorted list using binary search with the comparator.
+	+reverse(list: List): void
+	+reverseOrder(): Comparator 	Returns a comparator with the reverse ordering.
+	+shuffle(list: List): void
+	+shuffle(list: List, rmd: Random): void 	Shuffles the specified list with a random object.
+	+copy(des: List, src: List): void
+	+nCopies(n: int, o: Object): List 	Returns a list consisting of n copies of the object.
+	+fill(list: List, o: Object): void
+	+max(c: Collection): Object
+	+max(c: Collection, c: Comparator): Object 	Returns the max object using the comparator.
+	+min(c: Collection): Object
+	+min(c: Collection, c: Comparator): Object
+	+disjoint(c1: Collection, c2: Collection): boolean 	Returns true if c1 and c2 have no elements in common.
+	+frequency(c: Collection, o: Object): int  	Returns the number of occurrences of the specified element in the collection
+
+
+	To sort it in descending order, you can simply use the Collections.reverseOrder() method to return a Comparator object that orders the elements in reverse of their natural order. 
+
+	List<String> list = Arrays.asList("yellow", "red", "green", "blue"); 
+	Collections.sort(list, Collections.reverseOrder()); 
+	System.out.println(list);
+
+	The output is [yellow, red, green, blue].
+
+	You can use then Copies(int n, Object o)method to create an immutable list that consists of n copies of the specified object. For example, the following code creates a list with five Calendar objects.
+	
+	List<GregorianCalendar> list1 = Collections.nCopies (5, new GregorianCalendar(2005, 0, 1));
+
+	20.8 Vector and Stack Classes
+	* Vector is a subclass of AbstractList, and Stack is a subclass of Vector in the
+Java API.
+	* Vector is the same as ArrayList, except that it contains synchronized methods for accessing and modifying the vector. Synchronized methods can prevent data corruption when a vector is accessed and modified by two or more threads concurrently.
+
+	java.util.Vector <E>
+	+Vector() 	Creates a default empty vector with initial capacity 10.
+	+Vector(c: Collection<? extends E>) 	Creates a vector from an existing collection.
+	+Vector(initialCapacity: int) 	Creates a vector with the specified initial capacity.
+	+Vector(initCapacity: int, capacityIncr: int) 	Creates a vector with the specified initial capacity and increment.
+	+addElement(o: E): void 	Appends the element to the end of this vector.
+	+capacity(): int 	Returns the current capacity of this vector.
+	+copyInto(anArray: Object[]): void 	Copies the elements in this vector to the array.
+	+elementAt(index: int): E
+	+elements(): Enumeration<E> 	Returns an enumeration of this vector.
+	+ensureCapacity(): void 	Increases the capacity of this vector.
+	+firstElement(): E
+	+insertElementAt(o: E, index: int): void
+	+lastElement(): E
+	+removeAllElements(): void
+	+removeElement(o: Object): boolean 	Removes the first matching element in this vector.
+	+removeElementAt(index: int): void
+	+setElementAt(o: E, index: int): void 	Sets a new element at the specified index.
+	+setSize(newSize: int): void 	Sets a new size in this vector.
+	+trimToSize(): void
+
+
+	java.util.Stack<E>
+	+Stack()
+	+empty(): boolean
+	+peek(): E 	Returns the top element in this stack.
+	+pop(): E 	Returns and removes the top element in this stack.
+	+push(o: E): E
+	+search(o: Object): int
+
+	20.9 Queues and Priority Queues
+	* In a priority queue, the element with the highest priority is removed first.
+
+	20.9.1 The Queue Interface
+	* The Queue interface extends java.util.Collection with additional insertion, extraction,
+	and inspection operations.
+
+	java.util.Queue<E>
+	+offer(element: E): boolean 	Inserts an element into the queue.
+	+poll(): E 	Retrieves and removes the head of this queue, or null if this queue is empty.
+	+remove(): E  	Retrieves and removes the head of this queue and throws an exception if this queue is empty.
+	+peek(): E 	Retrieves, but does not remove, the head of this queue, returning null if this queue is empty.
+	+element(): E 	Retrieves, but does not remove, the head of this queue, throws an exception if this queue is empty
+
+	20.9.2 Deque and LinkedList
+	* The LinkedList class implements the Deque interface, which extends the Queue interface. Therefore, you can use LinkedList to create a queue. LinkedList is ideal for queue operations because it is efficient for inserting and removing elements from both ends of a list.
+	* The Deque interface extends Queue with additional methods for inserting and removing elements from both ends of the queue. The methods addFirst(e), removeFirst(), addLast(e), removeLast(), getFirst(), and getLast() are defined in the Deque interface.
+
+
+
+	TestQueue.java
+ public class TestQueue {
+	 public static void main(String[] args) {
+	 	java.util.Queue<String> queue = new java.util.LinkedList<>();
+	 	queue.offer("Oklahoma");
+	 	queue.offer("Indiana");
+	 	queue.offer("Georgia");
+	 	queue.offer("Texas");
+
+	 	while(queue.size() > 0)
+	 		System.out.print(queue.remove() + " ");
+   }
+}
+
+output: Oklahoma Indiana Georgia Texas
+
+
+The PriorityQueue class implements a priority queue. By default, the priority queue orders its elements according to their natural ordering using Comparable. The element with the least value is assigned the highest priority and thus is removed from the queue first. If there are several elements with the same highest priority, the tie is broken arbitrarily. You can also specify an ordering using Comparator in the constructor PriorityQueue(initialCapacity, comparator).
+
+java.util.PriorityQueue<E>
++PriorityQueue() 	Creates a default priority queue with initial capacity 11.
++PriorityQueue(initialCapacity: int) 	Creates a default priority queue with the specified initial capacity.
++PriorityQueue(c: Collection<? extends E>) 	Creates a priority queue with the specified collection.
++PriorityQueue(initialCapacity: int, comparator: Comparator<? super E>) Creates a priority queue with the specified initial capacity and the comparator.
