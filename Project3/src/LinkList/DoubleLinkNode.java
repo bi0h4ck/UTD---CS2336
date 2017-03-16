@@ -7,9 +7,8 @@ public class DoubleLinkNode extends BaseNode {
     public DoubleLinkNode next;
     public DoubleLinkNode prev;
 
-    public DoubleLinkNode(DoubleLinkNode next, DoubleLinkNode prev){
-        this.next = next;
-        this.prev = prev;
+    public DoubleLinkNode(int row, int seat){
+        super(row, seat);
     }
 
     public DoubleLinkNode getNext() {
