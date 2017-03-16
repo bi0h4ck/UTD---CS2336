@@ -42,6 +42,8 @@ public class Test {
         //Get number of tickets from user
         int numOfTickets = getNumOfTicket(scanner, col);
 
+        Boolean isEnoughSeat = isEnoughSeat(result, rowNumber, startingSeatNumber, numOfTickets);
+        System.out.println(isEnoughSeat);
 
     }
     class Result{
@@ -95,7 +97,6 @@ public class Test {
                 }
             }
             r++;
-
         }
         return new Result(reservedList, openList);
 
@@ -178,7 +179,25 @@ public class Test {
         return numOfTicket;
     }
 
+    public boolean isEnoughSeat(Result result, int rowNumber, int startingSeatNumber, int numOfTicket) {
+        DoubleLinkNode cur = result.openList.getHead();
+        int count = 0;
+        int startingSeat = startingSeatNumber;
+        while(count < numOfTicket && cur != null){
+            if(cur.row == rowNumber && cur.seat == startingSeat){
+                count++;
+                startingSeat++;
+                cur = cur.getNext();
+            } else {
+                cur = cur.getNext();
+            }
+        }
+        if (count == numOfTicket)
+            return true;
+        else return false;
+    }
 
+    
 
     // ask if user wants to reserve the tickets
     private boolean reserveTicket(Scanner scanner) {
