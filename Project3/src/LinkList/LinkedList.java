@@ -40,12 +40,12 @@ public class LinkedList {
     public void addNode(DoubleLinkNode node){
         if(head == null) {
             head = node;
-            tail = node;
         }
         else{
             tail.next = node;
-            tail = tail.next;
+            node.prev = tail;
         }
+        tail = node;
    }
 
    public void printList(){

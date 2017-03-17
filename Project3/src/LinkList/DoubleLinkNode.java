@@ -7,8 +7,14 @@ public class DoubleLinkNode extends BaseNode {
     public DoubleLinkNode next;
     public DoubleLinkNode prev;
 
+//    public DoubleLinkNode(int row, int seat){
+//        super(row, seat);
+//    }
+
     public DoubleLinkNode(int row, int seat){
         super(row, seat);
+        this.prev = null;
+        this.next = null;
     }
 
     public DoubleLinkNode getNext() {

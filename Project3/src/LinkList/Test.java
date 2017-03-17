@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -27,6 +28,7 @@ public class Test {
         //System.out.println("col: " + col);
 
         Result result = readAuditorium(fileName, row, col);
+        //result.openList.printList();
 
         //Display the seat arrangement
         displaySeatArrangement(fileName);
@@ -44,6 +46,10 @@ public class Test {
 
         Boolean isEnoughSeat = isEnoughSeat(result, rowNumber, startingSeatNumber, numOfTickets);
         System.out.println(isEnoughSeat);
+
+        ArrayList possibleStartingSeat = possibleStartingSeat(result, numOfTickets);
+        DoubleLinkNode bestSeat = bestSeat(possibleStartingSeat, col);
+        System.out.println(bestSeat.row + " " + bestSeat.seat);
 
     }
     class Result{
@@ -197,10 +203,143 @@ public class Test {
         else return false;
     }
 
-    
+    //Find all nodes that has starting seat met the number of tickets
+    public ArrayList possibleStartingSeat(Result result, int numOfTicket){
+        ArrayList possibleStartingSeat = new ArrayList();
+        LinkedList openList = result.openList;
+        DoubleLinkNode cur = openList.getHead();
+        //DoubleLinkNode tmp = cur;
+        //DoubleLinkNode endSeat = new DoubleLinkNode(0, 0);
+        int count = 1;
+        int row = cur.row;
+        do {
+            while (cur.getNext() != null && count < numOfTicket && (cur.next.row == cur.row) && (cur.next.seat - cur.seat == 1)) {
+                count++;
+                if (count == numOfTicket) {
+                    possibleStartingSeat.add(new DoubleLinkNode(row, cur.seat - numOfTicket + 2));
+                    count = 1;
+                    cur = cur.getNext();
+                }
+                if (cur.getNext() == null)
+                    return possibleStartingSeat;
+                else
+                    cur = cur.getNext();
+            }
+            if(cur.getNext() != null && cur.next.row == cur.row && cur.next.seat - cur.seat != 1){
+                cur = cur.getNext();
+                count = 1;
+            } else if (cur.getNext() != null && cur.next.row != cur.row){
+                cur = cur.getNext();
+                row = cur.row;
+                count = 1;
+            }
+
+        } while (cur.getNext() != null) ;
+
+            return possibleStartingSeat;
+
+        }
+
+
+//        while (cur.getNext() != null && count < numOfTicket && (cur.next.row == cur.row) && (cur.next.seat - cur.seat == 1)) {
+//            count++;
+//            if(count == numOfTicket){
+//                possibleStartingSeat.add(new DoubleLinkNode(row, cur.seat - numOfTicket + 1));
+//                count = 0;
+//            }
+//            cur = cur.getNext();
+//        }
+
+
+
+
+//            for (count = 1; count < numOfTicket; count ++){
+//
+//                endSeat = tmp.getNext();
+//                tmp = endSeat;
+//            }
+//            if((cur.row == endSeat.row) && (Math.abs(cur.seat + numOfTicket - 1) == endSeat.seat)){
+//                possibleStartingSeat.add(new DoubleLinkNode(row, endSeat.seat - numOfTicket + 1));
+//                //cur = cur.getNext();
+//            }
+//            cur = cur.getNext();
+
+
+
+    public DoubleLinkNode bestSeat(ArrayList possibleStartingSeat, int col){
+        DoubleLinkNode bestSeat = new DoubleLinkNode(((DoubleLinkNode)possibleStartingSeat.get(0)).row,
+                ((DoubleLinkNode)possibleStartingSeat.get(0)).seat);
+        int closestSeat = distance(((DoubleLinkNode)possibleStartingSeat.get(0)).seat, col);
+        for(int i = 1; i < possibleStartingSeat.size(); i++){
+            if(distance(((DoubleLinkNode)possibleStartingSeat.get(i)).seat, col) < closestSeat){
+                closestSeat = distance(((DoubleLinkNode)possibleStartingSeat.get(i)).seat, col);
+                bestSeat = new DoubleLinkNode(((DoubleLinkNode)possibleStartingSeat.get(i)).row,
+                        ((DoubleLinkNode)possibleStartingSeat.get(i)).seat);
+            }
+        }
+        return bestSeat;
+    }
+
+    public int distance(int seatNumber, int col){
+        double dRow = col / 1.0;
+        int midRow = (int) Math.round(dRow / 2);
+        int distance = Math.abs(seatNumber - midRow);
+        return distance;
+    }
+
+//    public DoubleLinkNode search(Result result, int numOfTicket, int numOfRow){
+//        DoubleLinkNode cur = result.openList.getHead();
+//        int count = 0;
+//        int row = 1;
+//
+//        ArrayList arrayOfRow = new ArrayList();
+//        while(cur.row == row){
+//            arrayOfRow.add(row * 100 + cur.seat);
+//        }
+//
+//
+//
+//    }
+//
+//    public DoubleLinkNode bestSeatOfEachRow(ArrayList array, int row, int col, int numOfTicket){
+//        double dRow = col / 1.0;
+//        int midRow = (int) Math.round(dRow / 2);
+//        int mid = row * 100 + midRow;
+//        int size = array.size();
+//        int[] arrayOfIndex = new int[size];
+//        for (int i = 0; i < size; i++){
+//            arrayOfIndex[i] = Math.abs(mid - (int)array.get(i));
+//        }
+//
+//    }
+
+//    public int searchLeft(int[] arrayOfIndex, int numOfTicket){
+//        int startingSeatNumber = -1;
+//        int indexMin = getMinValue(arrayOfIndex) + 1;
+//        for(int i = 0; i < numOfTicket; i++){
+//            if(Math.abs(arrayOfIndex[indexMin] - numOfTicket + 1) ==
+//                    Math.abs(arrayOfIndex[indexMin - numOfTicket - numOfTicket + 1])){
+//                startingSeatNumber = indexMin;
+//            }
+//        }
+//        return startingSeatNumber;
+//    }
+//
+//    // getting the miniumum value
+//    public static int getMinValue(int[] array) {
+//        int minValue = array[0];
+//        int index = 0;
+//        for (int i = 1; i < array.length; i++) {
+//            if (array[i] < minValue) {
+//                minValue = array[i];
+//                index = i;
+//            }
+//        }
+//        return index;
+//    }
 
     // ask if user wants to reserve the tickets
-    private boolean reserveTicket(Scanner scanner) {
+    public boolean reserveTicket(Scanner scanner) {
         char yOrN;
         do {
             System.out.println("Would you like to reserve your tickets? Y/N");
