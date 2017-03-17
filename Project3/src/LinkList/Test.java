@@ -208,37 +208,41 @@ public class Test {
         ArrayList possibleStartingSeat = new ArrayList();
         LinkedList openList = result.openList;
         DoubleLinkNode cur = openList.getHead();
-        //DoubleLinkNode tmp = cur;
+        DoubleLinkNode tmp = cur;
         //DoubleLinkNode endSeat = new DoubleLinkNode(0, 0);
         int count = 1;
         int row = cur.row;
         do {
-            while (cur.getNext() != null && count < numOfTicket && (cur.next.row == cur.row) && (cur.next.seat - cur.seat == 1)) {
+            while (tmp.getNext() != null && count < numOfTicket && (tmp.next.row == tmp.row) && (tmp.next.seat - tmp.seat == 1)) {
                 count++;
                 if (count == numOfTicket) {
-                    possibleStartingSeat.add(new DoubleLinkNode(row, cur.seat - numOfTicket + 2));
+                    possibleStartingSeat.add(new DoubleLinkNode(row, cur.seat));
                     count = 1;
                     cur = cur.getNext();
+                    tmp = cur.getPrev();
                 }
-                if (cur.getNext() == null)
+                if (tmp.getNext() == null)
                     return possibleStartingSeat;
-                else
-                    cur = cur.getNext();
+                else if (tmp.getNext() != null)
+                    tmp = tmp.getNext();
             }
-            if(cur.getNext() != null && cur.next.row == cur.row && cur.next.seat - cur.seat != 1){
-                cur = cur.getNext();
+            if(tmp.getNext() != null && tmp.next.row == tmp.row && tmp.next.seat - tmp.seat != 1){
+                cur = tmp.getNext();
+                tmp = cur;
                 count = 1;
-            } else if (cur.getNext() != null && cur.next.row != cur.row){
-                cur = cur.getNext();
+            } else if (tmp.getNext() != null && tmp.next.row != tmp.row){
+                cur = tmp.getNext();
+                tmp = cur;
                 row = cur.row;
                 count = 1;
             }
 
-        } while (cur.getNext() != null) ;
+        } while (tmp.getNext() != null) ;
 
-            return possibleStartingSeat;
+        return possibleStartingSeat;
 
-        }
+    }
+
 
 
 //        while (cur.getNext() != null && count < numOfTicket && (cur.next.row == cur.row) && (cur.next.seat - cur.seat == 1)) {
