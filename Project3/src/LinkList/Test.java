@@ -52,11 +52,8 @@ public class Test {
         DoubleLinkNode bestSeat = bestSeat(possibleStartingSeat, col, numOfTickets);
         System.out.println(bestSeat.row + " " + bestSeat.seat);
 
-        System.out.println("insert best seat");
-
         result.reservedList.insertNode(bestSeat);
-
-        System.out.println("done");
+        result.openList.removeNode(bestSeat);
 
     }
     class Result{
