@@ -1,11 +1,6 @@
 package LinkList;
 
-
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -14,16 +9,14 @@ public class Test {
 
     public void run() throws IOException {
         String[] files = {"A1.txt", "A2.txt", "A3.txt"};
-//        do {
         Scanner scanner = new Scanner(System.in);
 
-            //Show the main menu and get user input
+        //Show the main menu and get user input
         int getUserInput = showMainMenu(scanner);
-        String fileName = files[getUserInput - 1];
+        int auditoriumNumber = auditoriumMenu(scanner);
+        String fileName = files[auditoriumNumber - 1];
 
-        FileReader fileReader = new FileReader(fileName);
-
-        int row = numOfRow(fileReader);
+        int row = numOfRow(fileName);
         //System.out.println("row: " + row);
         int col = numOfColumn(fileName);
         //System.out.println("col: " + col);
@@ -32,7 +25,7 @@ public class Test {
         //result.openList.printList();
 
         //Display the seat arrangement
-        displaySeatArrangement(fileName);
+        displaySeatArrangement(fileName, row, col);
 
         //Get the row number from user
         int rowNumber = getRowNumber(scanner, row);
@@ -45,15 +38,21 @@ public class Test {
         //Get number of tickets from user
         int numOfTickets = getNumOfTicket(scanner, col);
 
+        //Check whether the user's choice is met
         Boolean isEnoughSeat = isEnoughSeat(result, rowNumber, startingSeatNumber, numOfTickets);
-        System.out.println(isEnoughSeat);
+        
 
+        //possible starting seat
         ArrayList possibleStartingSeat = possibleStartingSeat(result, numOfTickets);
+
+        //Find the best seat in the entire auditorium
         DoubleLinkNode bestSeat = bestSeat(possibleStartingSeat, col, numOfTickets);
         System.out.println(bestSeat.row + " " + bestSeat.seat);
 
         result.reservedList.insertNode(bestSeat);
         result.openList.removeNode(bestSeat);
+
+        writeDataToFile(result.reservedList, 1, 1, row, col);
 
     }
     class Result{
@@ -67,8 +66,8 @@ public class Test {
     }
 
     // get number of row
-    private int numOfRow(FileReader fileReader) throws IOException {
-        LineNumberReader lnr = new LineNumberReader(fileReader);
+    private int numOfRow(String fileName) throws IOException {
+        LineNumberReader lnr = new LineNumberReader(new FileReader(fileName));
         lnr.skip(Long.MAX_VALUE);
         int lineNumber = lnr.getLineNumber() + 1;
         //System.out.println(lnr.getLineNumber() + 1);
@@ -112,33 +111,59 @@ public class Test {
 
     }
 
-    private void displaySeatArrangement(String fileName) throws IOException{
+    private void displaySeatArrangement(String fileName, int row, int col) throws IOException{
+        System.out.print(" ");
+        for (int i = 1; i <= col; i++){
+            if (i < 10)
+                System.out.print(i);
+            else
+                System.out.print(i % 10);
+        }
+        System.out.print("\n");
         String line;
+        int count = 1;
         BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
         while ((line = bufferedReader.readLine()) != null){
-            System.out.println(line);
+            System.out.println(count + line);
+            count++;
         }
     }
 
     // show the main menu and get user input
-    private int showMainMenu(Scanner scanner) {
+    public int showMainMenu(Scanner scanner) {
         int userInput = 0;
         do {
             try {
-                System.out.println("1. Auditorium1");
-                System.out.println("2. Auditorium2");
-                System.out.println("3. Auditorium3");
-                System.out.println("4. Exit");
-                System.out.println("Please type 1, 2, 3 to choose auditorium number or 4 to exit: ");
+                System.out.println("1. Reserve Seats");
+                System.out.println("2. View Auditorium");
+                System.out.println("3. Exit");
                 userInput = scanner.nextInt();
             } catch (InputMismatchException e) {
                 System.out.println("Your input is invalid!");
             }
             scanner.nextLine();
-        } while (userInput < 1 || userInput > 4);
-        if (userInput == 4)
+        } while (userInput < 1 || userInput > 3);
+        if(userInput == 3){
             System.exit(0);
+        }
         return userInput;
+    }
+
+    //show auditorium menu and get user's input
+    public int auditoriumMenu(Scanner scanner){
+        int auditoriumNumber = 0;
+        do{
+            try{
+                System.out.println("1. Auditorium 1");
+                System.out.println("2. Auditorium 2");
+                System.out.println("3. Auditorium 3");
+                auditoriumNumber = scanner.nextInt();
+            } catch (InputMismatchException e){
+                System.out.println("Your input must be 1, 2 or 3");
+            }
+            scanner.nextLine();
+        } while (auditoriumNumber < 1 || auditoriumNumber > 3);
+        return auditoriumNumber;
     }
 
     // get the row number from user input
@@ -149,7 +174,7 @@ public class Test {
                 System.out.println("Please enter your row number: ");
                 rowNumber = scanner.nextInt();
             } catch (InputMismatchException e) {
-                System.out.println("Your input is invalid.");
+                System.out.println("Your row number must be an integer between 1 and " + row);
             }
             scanner.nextLine();
         } while (rowNumber < 1 || rowNumber > row);
@@ -165,7 +190,7 @@ public class Test {
                 System.out.println("Please enter your starting seat number: ");
                 seatNumber = scanner.nextInt();
             } catch (InputMismatchException e) {
-                System.out.println("Your input is invalid");
+                System.out.println("Your row number must be an integer between 1 and " + col);
             }
             scanner.nextLine();
         } while (seatNumber < 1 || seatNumber > col);
@@ -181,7 +206,7 @@ public class Test {
                 System.out.println("Please enter the number of ticket you want to reserve: ");
                 numOfTicket = scanner.nextInt();
             } catch (InputMismatchException e) {
-                System.out.println("Your value is invalid.");
+                System.out.println("Your number of ticket must be an integer between 1 and " + col);
             }
             scanner.nextLine();
         } while (numOfTicket < 1 || numOfTicket > col);
@@ -189,12 +214,13 @@ public class Test {
         return numOfTicket;
     }
 
+
     public boolean isEnoughSeat(Result result, int rowNumber, int startingSeatNumber, int numOfTicket) {
         DoubleLinkNode cur = result.openList.getHead();
         int count = 0;
         int startingSeat = startingSeatNumber;
-        while(count < numOfTicket && cur != null){
-            if(cur.row == rowNumber && cur.seat == startingSeat){
+        while (count < numOfTicket && cur != null) {
+            if (cur.row == rowNumber && cur.seat == startingSeat) {
                 count++;
                 startingSeat++;
                 cur = cur.getNext();
@@ -204,10 +230,12 @@ public class Test {
         }
         if (count == numOfTicket)
             return true;
-        else return false;
+        else
+            return false;
     }
 
-    //Find all nodes that has starting seat met the number of tickets
+
+    //Find all nodes that has starting seat met the number of tickets (>= 2)
     public ArrayList possibleStartingSeat(Result result, int numOfTicket){
         ArrayList possibleStartingSeat = new ArrayList();
         LinkedList openList = result.openList;
@@ -216,7 +244,7 @@ public class Test {
         int count = 1;
         int row = cur.row;
         do {
-            while (tmp.getNext() != null && count < numOfTicket && (tmp.next.row == tmp.row) && (tmp.next.seat - tmp.seat == 1)) {
+            while (tmp.next != null && count < numOfTicket && (tmp.next.row == tmp.row) && (tmp.next.seat - tmp.seat == 1)) {
                 count++;
                 if (count == numOfTicket) {
                     possibleStartingSeat.add(new DoubleLinkNode(row, cur.seat));
@@ -224,29 +252,27 @@ public class Test {
                     cur = cur.getNext();
                     tmp = cur.getPrev();
                 }
-                if (tmp.getNext() == null)
+                if (tmp.next == null)
                     return possibleStartingSeat;
-                else if (tmp.getNext() != null)
+                else if (tmp.next != null)
                     tmp = tmp.getNext();
             }
-            if(tmp.getNext() != null && tmp.next.row == tmp.row && tmp.next.seat - tmp.seat != 1){
+            if(tmp.next != null && tmp.next.row == tmp.row && tmp.next.seat - tmp.seat != 1){
                 cur = tmp.getNext();
                 tmp = cur;
                 count = 1;
-            } else if (tmp.getNext() != null && tmp.next.row != tmp.row){
+            } else if (tmp.next != null && tmp.next.row != tmp.row){
                 cur = tmp.getNext();
                 tmp = cur;
                 row = cur.row;
                 count = 1;
             }
-
-        } while (tmp.getNext() != null) ;
+        } while (tmp.next != null) ;
 
         return possibleStartingSeat;
-
     }
 
-
+    // Find the best starting seat
     public DoubleLinkNode bestSeat(ArrayList possibleStartingSeat, int col, int numOfTicket){
         DoubleLinkNode bestSeat = new DoubleLinkNode(((DoubleLinkNode)possibleStartingSeat.get(0)).row,
                 ((DoubleLinkNode)possibleStartingSeat.get(0)).seat);
@@ -261,6 +287,7 @@ public class Test {
         return bestSeat;
     }
 
+    //find distance between the the middle of number of ticket and the mid row
     public int distance(int seatNumber, int col, int numOfTicket){
         double dRow = col / 1.0;
         int midRow = (int) Math.round(dRow / 2);
@@ -280,8 +307,54 @@ public class Test {
 
         if (yOrN == 'y' || yOrN == 'Y') return true;
         else return false;
-
     }
+
+    public File writeDataToFile(LinkedList reservedList, int rowStart, int seat, int row, int col) throws IOException {
+        File file = new File("tmp.txt");
+        String line = "";
+        FileWriter writer = new FileWriter(file, true);
+        BufferedWriter out = new BufferedWriter(writer);
+        String l = write(reservedList.getHead(), reservedList.getTail(), line, rowStart, seat, row, col);
+        out.write(l);
+        out.flush();
+        out.close();
+        return file;
+    }
+
+    public String write(DoubleLinkNode head, DoubleLinkNode tail, String line, int rowStart, int seat, int row, int col) throws IOException{
+        int r = head.row;
+        int s = head.seat;
+
+        if(rowStart == r && seat == s) {
+            line = line.concat(".");
+            if(seat == col){
+                if(rowStart + 1 <= row){
+                    line = line.concat("\n");
+                    rowStart++;
+                    seat = 0;
+                } else
+                    return line;
+            }
+            //if the last node is the last seat
+            if(head == tail && tail.row == rowStart && tail.seat == col)
+                return line;
+            if(head.next != null)
+                head = head.getNext();
+            seat++;
+        } else {
+            line = line.concat("#");
+            seat++;
+            if(rowStart == col){
+                line = line.concat("\n");
+                rowStart++;
+            }
+        }
+
+        return write(head, tail, line, rowStart, seat, row, col);
+    }
+
+
+
 }
 
 
