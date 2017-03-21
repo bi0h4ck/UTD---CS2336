@@ -29,8 +29,10 @@ public class Main {
             for(int i = 0; i < line.length(); i++){
                 stack.push(new Node(line.charAt(i)));
             }
+            stack.push(new Node('\n'));
 
         }
+        stack.pop();
         //pop the characters from the stack and save them in a new file in a reverse order
         BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));
         while(stack.top != null){
@@ -84,6 +86,7 @@ public class Main {
             for (int i = 0; i < line.length(); i++) {
                 queue.enqueue(new Node(line.charAt(i)));
             }
+            queue.enqueue(new Node('\n'));
         }
         return queue;
     }
