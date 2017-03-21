@@ -17,9 +17,9 @@ public class Test {
         String fileName = files[auditoriumNumber - 1];
 
         int row = numOfRow(fileName);
-        //System.out.println("row: " + row);
+
         int col = numOfColumn(fileName);
-        //System.out.println("col: " + col);
+        
 
         Result result = readAuditorium(fileName, row, col);
         //result.openList.printList();
@@ -40,13 +40,13 @@ public class Test {
 
         //Check whether the user's choice is met
         Boolean isEnoughSeat = isEnoughSeat(result, rowNumber, startingSeatNumber, numOfTickets);
-        
+
 
         //possible starting seat
         ArrayList possibleStartingSeat = possibleStartingSeat(result, numOfTickets);
 
         //Find the best seat in the entire auditorium
-        DoubleLinkNode bestSeat = bestSeat(possibleStartingSeat, col, numOfTickets);
+        DoubleLinkNode bestSeat = bestSeat(possibleStartingSeat, col);
         System.out.println(bestSeat.row + " " + bestSeat.seat);
 
         result.reservedList.insertNode(bestSeat);
@@ -243,43 +243,52 @@ public class Test {
         DoubleLinkNode tmp = cur;
         int count = 1;
         int row = cur.row;
-        do {
-            while (tmp.next != null && count < numOfTicket && (tmp.next.row == tmp.row) && (tmp.next.seat - tmp.seat == 1)) {
-                count++;
-                if (count == numOfTicket) {
-                    possibleStartingSeat.add(new DoubleLinkNode(row, cur.seat));
-                    count = 1;
-                    cur = cur.getNext();
-                    tmp = cur.getPrev();
-                }
-                if (tmp.next == null)
-                    return possibleStartingSeat;
-                else if (tmp.next != null)
-                    tmp = tmp.getNext();
-            }
-            if(tmp.next != null && tmp.next.row == tmp.row && tmp.next.seat - tmp.seat != 1){
-                cur = tmp.getNext();
-                tmp = cur;
-                count = 1;
-            } else if (tmp.next != null && tmp.next.row != tmp.row){
-                cur = tmp.getNext();
-                tmp = cur;
+        if(numOfTicket == 1){
+            while(cur.next != null){
+                possibleStartingSeat.add(new DoubleLinkNode(row, cur.seat));
+                cur = cur.getNext();
                 row = cur.row;
-                count = 1;
             }
-        } while (tmp.next != null) ;
+            possibleStartingSeat.add(new DoubleLinkNode(row, cur.seat));
+        } else{
+            do {
+                while (tmp.next != null && count < numOfTicket && (tmp.next.row == tmp.row) && (tmp.next.seat - tmp.seat == 1)) {
+                    count++;
+                    if (count == numOfTicket) {
+                        possibleStartingSeat.add(new DoubleLinkNode(row, cur.seat));
+                        count = 1;
+                        cur = cur.getNext();
+                        tmp = cur.getPrev();
+                    }
+                    if (tmp.next == null)
+                        return possibleStartingSeat;
+                    else if (tmp.next != null)
+                        tmp = tmp.getNext();
+                }
+                if(tmp.next != null && tmp.next.row == tmp.row && tmp.next.seat - tmp.seat != 1){
+                    cur = tmp.getNext();
+                    tmp = cur;
+                    count = 1;
+                } else if (tmp.next != null && tmp.next.row != tmp.row){
+                    cur = tmp.getNext();
+                    tmp = cur;
+                    row = cur.row;
+                    count = 1;
+                }
+            } while (tmp.next != null);
 
+        }
         return possibleStartingSeat;
     }
 
     // Find the best starting seat
-    public DoubleLinkNode bestSeat(ArrayList possibleStartingSeat, int col, int numOfTicket){
+    public DoubleLinkNode bestSeat(ArrayList possibleStartingSeat, int col){
         DoubleLinkNode bestSeat = new DoubleLinkNode(((DoubleLinkNode)possibleStartingSeat.get(0)).row,
                 ((DoubleLinkNode)possibleStartingSeat.get(0)).seat);
-        int closestSeat = distance(((DoubleLinkNode)possibleStartingSeat.get(0)).seat, col, numOfTicket);
+        double closestSeat = distance(((DoubleLinkNode)possibleStartingSeat.get(0)).seat, col);
         for(int i = 1; i < possibleStartingSeat.size(); i++){
-            if(distance(((DoubleLinkNode)possibleStartingSeat.get(i)).seat, col, numOfTicket) < closestSeat){
-                closestSeat = distance(((DoubleLinkNode)possibleStartingSeat.get(i)).seat, col, numOfTicket);
+            if(distance(((DoubleLinkNode)possibleStartingSeat.get(i)).seat, col) < closestSeat){
+                closestSeat = distance(((DoubleLinkNode)possibleStartingSeat.get(i)).seat, col);
                 bestSeat = new DoubleLinkNode(((DoubleLinkNode)possibleStartingSeat.get(i)).row,
                         ((DoubleLinkNode)possibleStartingSeat.get(i)).seat);
             }
@@ -288,11 +297,16 @@ public class Test {
     }
 
     //find distance between the the middle of number of ticket and the mid row
-    public int distance(int seatNumber, int col, int numOfTicket){
+    public double distance(int seatNumber, int col){
+        double seatNum = seatNumber/1.0;
+        double midRow;
         double dRow = col / 1.0;
-        int midRow = (int) Math.round(dRow / 2);
-        numOfTicket = (int) Math.round((numOfTicket/1.0)/2);
-        int distance = Math.abs(seatNumber + numOfTicket - midRow);
+        if(col % 2 == 0){
+            midRow = dRow / 2 + 0.5;
+        } else{
+            midRow = dRow / 2;
+        }
+        double distance = Math.abs(seatNum - midRow);
         return distance;
     }
 
@@ -325,31 +339,23 @@ public class Test {
         int r = head.row;
         int s = head.seat;
 
-        if(rowStart == r && seat == s) {
+        if(rowStart == r && seat == s){
             line = line.concat(".");
-            if(seat == col){
-                if(rowStart + 1 <= row){
-                    line = line.concat("\n");
-                    rowStart++;
-                    seat = 0;
-                } else
-                    return line;
-            }
-            //if the last node is the last seat
-            if(head == tail && tail.row == rowStart && tail.seat == col)
-                return line;
             if(head.next != null)
                 head = head.getNext();
-            seat++;
-        } else {
+        }
+        else
             line = line.concat("#");
-            seat++;
-            if(rowStart == col){
+
+        if(seat == col){
+            if(rowStart + 1 <= row){
                 line = line.concat("\n");
                 rowStart++;
-            }
+                seat = 0;
+            } else
+                return line;
         }
-
+        seat++;
         return write(head, tail, line, rowStart, seat, row, col);
     }
 
