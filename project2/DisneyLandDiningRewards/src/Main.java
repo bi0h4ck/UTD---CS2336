@@ -68,6 +68,7 @@ class ProcessOrder {
 
                 //If the ID belongs to preferred, call the processPreferred function
                 if (isCustomer < 0 && isPreferred >= 0) {
+                    System.out.println("******* CALLING processPreferred");
                     processPreferred(arrayOfCustomerLines, arrayOfPreferred, isPreferred, amountSpent, preferredFileName);
                     // If the ID belongs to customer, call the processCustomer function
                 } else if (isCustomer >= 0 && isPreferred < 0) {
@@ -76,7 +77,7 @@ class ProcessOrder {
                 }
             }
             writeToFile(result.newArrayOfCustomerLines, customerFileName);
-            writeToFile(result.newArrayOfPreferredLines, preferredFileName);
+            //writeToFile(result.newArrayOfPreferredLines, preferredFileName);
         }
         //If the preferred file does not exist or exist but is empty
         else if ((!preferredFileExists) || preferredFileName.length() <= 0) {
@@ -84,6 +85,7 @@ class ProcessOrder {
             //If the preferred file does not exist, create one
             if (!preferredFileExists) {
                 preferredFileName.createNewFile();
+
             }
 
             for (int count = 0; count < arrayOfTransactionLines.length; count++) {
@@ -170,7 +172,6 @@ class ProcessOrder {
         }
         //write the array of updated preferred customers into a file
         writeToFile(newArrayOfPreferredLines, fileName);
-
     }
 
     //Remove the promoted customer out of the regular customer array
