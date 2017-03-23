@@ -68,7 +68,7 @@ class ProcessOrder {
 
                 //If the ID belongs to preferred, call the processPreferred function
                 if (isCustomer < 0 && isPreferred >= 0) {
-                    processPreferred(arrayOfPreferred, isPreferred, amountSpent, preferredFileName);
+                    processPreferred(arrayOfCustomerLines, arrayOfPreferred, isPreferred, amountSpent, preferredFileName);
                     // If the ID belongs to customer, call the processCustomer function
                 } else if (isCustomer >= 0 && isPreferred < 0) {
                     result = processCustomer(arrayOfCustomers, arrayOfCustomerLines, arrayOfPreferredLines,
@@ -153,12 +153,12 @@ class ProcessOrder {
     }
 
     //This function is called when the customer ID in the transaction file belongs to preferred customers
-    public void processPreferred(PreferredCustomer[] arrayOfPreferred, int isPreferred,
+    public void processPreferred(String[] arrayOfCustomerLines, PreferredCustomer[] arrayOfPreferred, int isPreferred,
                                  double amountSpent, File fileName) throws IOException {
         //get the discount percentage
         double discount = arrayOfPreferred[isPreferred].getDiscountPercentage();
         //get the amount spent after discount
-        double amountAfterDiscount = amountSpent * discount;
+        double amountAfterDiscount = amountSpent - (amountSpent * discount);
         //update the amountSpent
         arrayOfPreferred[isPreferred].updateAmountSpent(amountAfterDiscount);
         //update the discount percentage
@@ -170,6 +170,7 @@ class ProcessOrder {
         }
         //write the array of updated preferred customers into a file
         writeToFile(newArrayOfPreferredLines, fileName);
+
     }
 
     //Remove the promoted customer out of the regular customer array

@@ -8,19 +8,24 @@ import java.util.NoSuchElementException;
 public class LinkedList {
     public DoubleLinkNode head;
     public DoubleLinkNode tail;
-
+    public int size;
 
     public LinkedList(){
-
+        size = 0;
     }
 
+//    public LinkedList(DoubleLinkNode node){
+//        this.head = node;
+//        DoubleLinkNode next = node.getNext();
+//        while(next != null) {
+//          next = next.getNext();
+//        }
+//        this.tail = next;
+//    }
+
     public LinkedList(DoubleLinkNode node){
-        this.head = node;
-        DoubleLinkNode next = node.getNext();
-        while(next != null) {
-          next = next.getNext();
-        }
-        this.tail = next;
+        this.head = this.tail = node;
+        size = 1;
     }
 
     public DoubleLinkNode getHead() {
@@ -38,6 +43,13 @@ public class LinkedList {
     public void setTail(DoubleLinkNode tail) {
         this.tail = tail;
     }
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
 
     public int size(){
         int size = 0;
@@ -47,15 +59,38 @@ public class LinkedList {
         return size;
     }
 
+    public boolean isEmpty(){
+        boolean isEmpty = false;
+        try{
+            isEmpty = head == null;
+        } catch (NoSuchElementException e){
+
+        }
+        return isEmpty;
+    }
+
+    //add a node at the end
     public void addNode(DoubleLinkNode node){
         if(head == null) {
             head = node;
         }
         else{
             tail.next = node;
-            node.prev = tail;
+            //node.prev = tail;
         }
         tail = node;
+        size++;
+   }
+
+   //add a node before head
+   public void push(DoubleLinkNode node){
+        node.prev = null;
+        node.next = head;
+        if(head != null){
+            head.prev = node;
+        }
+        head = node;
+        size++;
    }
 
    public void addLater(DoubleLinkNode node, DoubleLinkNode laterNode){
@@ -67,77 +102,68 @@ public class LinkedList {
         } else {
             addNode(laterNode);
         }
+        size++;
    }
 
 
    public void insertNode(DoubleLinkNode node) {
-       if (head == null)
+       if (head == null){
            head = node;
-       else if (head.next == null) {
-           if ((node.row == head.row && node.seat > head.seat) || (node.row > head.row))
-               addLater(head, node);
-           else {
-               head.prev = node.next;
-               node.prev = null;
-               head.next = null;
-               node = head;
-           }
-       } else {
+           size++;
+       }
+       //if the node is smaller than head
+       else if ((node.row < head.row) || (node.row == head.row && node.seat < head.seat))
+           //Insert the node before head
+           push(node);
+       else {
            DoubleLinkNode cur = head;
-           while (node.row != cur.row) {
-               cur = cur.getNext();
+           //move cur until its row = node.row
+           while(cur.next != null && node.row <= cur.row && cur.next.seat < node.seat){
+               cur = cur.next;
            }
-           DoubleLinkNode next = cur.next;
-           if (node.seat < cur.seat) {
-               if (cur.prev == null) {
-                   cur.prev = node.next;
-                   node.prev = null;
-               } else {
-                   cur.getPrev().next = node.prev;
-                   cur.prev = node.next;
-               }
-           } else {
-               //tested
-               while (next.row == cur.row && next.seat < node.seat) {
-                   cur = cur.next;
-                   next = cur.next;
-               }
-               addLater(cur, node);
-           }
+           node.next = cur.next;
+           cur.next = node;
+           size++;
+       }
 
+   }
+   public void inserLinkList(LinkedList list){
+       if(head == null){
+           
        }
    }
 
    public void removeNode(DoubleLinkNode node){
-       if(head == null){
-           throw new NoSuchElementException();
+       if(this.isEmpty()){
+           System.out.println("The list is empty");
        }
-       //if there is one node, head = tail
-       if (head == tail && node.row == head.row && node.seat == head.seat){
+       //remove the head when there is one node
+       else if (head == tail && node.row == head.row && node.seat == head.seat){
            this.head = this.tail = null;
-           return;
        }
-       //if the node = head, remove the head
-       if (node.row == head.row && node.seat == head.seat && head.next != null){
-            this.head = this.head.getNext();
-            this.head.setPrev(null);
-            return;
+       //remove the head when there are more than one node
+       else if (head.next != null && node.row == head.row && node.seat == head.seat){
+            head = head.next;
+            head.prev = null;
        }
        //if the node = tail, remove the tail
-       if(node.row == tail.row && node.seat == tail.seat){
-            this.tail = this.tail.getPrev();
-            this.tail.setNext(null);
-            return;
-       }
-       for(DoubleLinkNode cur = head; cur != null; cur = cur.getNext()){
-           if(cur.row == node.row && cur.seat == node.seat){
-               DoubleLinkNode prev = cur.getPrev();
-               DoubleLinkNode next = cur.getNext();
-               prev.setNext(next);
-               next.setPrev(prev);
-               return;
+       else if (node.row == tail.row && node.seat == tail.seat){
+            tail = tail.prev;
+            tail.next = null;
+       // if the deleted node is not either head or tail
+       } else {
+           DoubleLinkNode cur = head;
+           //move cur until cur.next = node
+           while(cur.next != null && node.row != cur.row && cur.seat != node.seat){
+               cur = cur.next;
            }
-       }
+           //remove cur
+           if(cur.next != null)
+                cur.next.prev = cur.prev;
+           if(cur.prev != null)
+                cur.prev.next = cur.next;
+           }
+       size--;
    }
 
    public void printList(){
@@ -147,6 +173,8 @@ public class LinkedList {
             cur = cur.next;
         }
    }
+
+
 }
 
 

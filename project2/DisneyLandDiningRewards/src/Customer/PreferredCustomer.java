@@ -22,7 +22,7 @@ public class PreferredCustomer extends Customer {
     }
 
     public void updateAmountSpend(double spent){
-        this.amountSpent += this.discountPercentage * spent;
+        this.amountSpent += spent;
     }
 
     public void updateDiscountPercentage(){
