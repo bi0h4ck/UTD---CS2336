@@ -68,7 +68,6 @@ class ProcessOrder {
 
                 //If the ID belongs to preferred, call the processPreferred function
                 if (isCustomer < 0 && isPreferred >= 0) {
-                    System.out.println("******* CALLING processPreferred");
                     processPreferred(arrayOfCustomerLines, arrayOfPreferred, isPreferred, amountSpent, preferredFileName);
                     // If the ID belongs to customer, call the processCustomer function
                 } else if (isCustomer >= 0 && isPreferred < 0) {
@@ -77,16 +76,13 @@ class ProcessOrder {
                 }
             }
             writeToFile(result.newArrayOfCustomerLines, customerFileName);
-            //writeToFile(result.newArrayOfPreferredLines, preferredFileName);
         }
-        //If the preferred file does not exist or exist but is empty
-        else if ((!preferredFileExists) || preferredFileName.length() <= 0) {
-            arrayOfPreferredLines = new String[1];
-            //If the preferred file does not exist, create one
-            if (!preferredFileExists) {
-                preferredFileName.createNewFile();
 
-            }
+        //If the preferred file does not exist or exist but is empty
+        else if (!preferredFileExists) {
+            //If the preferred file does not exist, create one
+            preferredFileName.createNewFile();
+            arrayOfPreferredLines = new String[0];
 
             for (int count = 0; count < arrayOfTransactionLines.length; count++) {
                 //get customer ID of the transaction
@@ -98,12 +94,16 @@ class ProcessOrder {
                 //Process customer
                 result = processCustomer(arrayOfCustomers, arrayOfCustomerLines, arrayOfPreferredLines,
                         isCustomer, amountSpent);
+                arrayOfPreferredLines = result.newArrayOfPreferredLines;
+                arrayOfCustomerLines = result.newArrayOfCustomerLines;
             }
+            writeToFile(arrayOfPreferredLines, preferredFileName);
+            writeToFile(arrayOfCustomerLines, customerFileName);
+
             //If the preferred file is empty, delete it
             if (preferredFileName.length() <= 0) {
                 preferredFileName.delete();
             }
-            writeToFile(result.newArrayOfCustomerLines, customerFileName);
         }
     }
 
@@ -114,7 +114,8 @@ class ProcessOrder {
         BufferedWriter out = new BufferedWriter((new FileWriter(tmp)));
         for (int count = 0; count < array.length; count++) {
             out.write(array[count]);
-            out.write("\n");
+            if(count != array.length - 1)
+                out.write("\n");
         }
         out.flush();
         out.close();
@@ -195,28 +196,33 @@ class ProcessOrder {
             //copy from the beginning of the old array into the new array except the promoted customer
             System.arraycopy(arrayOfCustomerLines, 0, newArrayOfCustomerLines, 0, isCustomer);
         System.arraycopy(arrayOfCustomerLines, isCustomer + 1, newArrayOfCustomerLines, isCustomer,
-                newArraySize);
+                newArraySize - isCustomer);
 
         return newArrayOfCustomerLines;
     }
 
     //Move to promoted customer to preferred array
     public String[] moveToPreferred(Customer customer, String[] arrayOfPreferred) {
-
+        int newArraySize;
         PreferredCustomer newPreferred = new PreferredCustomer(customer.getID(), customer.getFirstName(),
                 customer.getLastName(), customer.getAmountSpent(), 0.0);
         // get the discount percentage based on the total amountSpent
         newPreferred.updateDiscountPercentage();
         // increase the new array size by 1
-        int newArraySize = arrayOfPreferred.length + 1;
-
-        String[] newArrayOfPreferred = new String[newArraySize];
-        //copy all the preferred customers into a new array
-        System.arraycopy(arrayOfPreferred, 0, newArrayOfPreferred, 0, newArraySize - 1);
-        //copy the new promoted customer at the end of the new array
-        newArrayOfPreferred[newArraySize - 1] = newPreferred.toString();
-
-        return newArrayOfPreferred;
+        if(arrayOfPreferred.length >= 1){
+            newArraySize = arrayOfPreferred.length + 1;
+            String[] newArrayOfPreferred = new String[newArraySize];
+            //copy all the preferred customers into a new array
+            System.arraycopy(arrayOfPreferred, 0, newArrayOfPreferred, 0, newArraySize - 1);
+            //copy the new promoted customer at the end of the new array
+            newArrayOfPreferred[newArraySize - 1] = newPreferred.toString();
+            return newArrayOfPreferred;
+        } else {
+            newArraySize = 1;
+            String[] newArrayOfPreferred = new String[newArraySize];
+            newArrayOfPreferred[0] = newPreferred.toString();
+            return newArrayOfPreferred;
+        }
     }
 
     //check whether the customer in the transaction belongs to regular customer
