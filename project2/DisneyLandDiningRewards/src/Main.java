@@ -1,6 +1,4 @@
 import Customer.*;
-
-
 import java.io.IOException;
 import java.io.*;
 import java.text.DecimalFormat;
@@ -22,12 +20,12 @@ public class Main {
 class ProcessOrder {
     // Result class has newArrayOfPreferredLines and newArrayOfCustomerLines
     protected class Result {
-        protected String[] newArrayOfPreferredLines;
-        protected String[] newArrayOfCustomerLines;
+        protected PreferredCustomer[] newArrayOfPreferred;
+        protected Customer[] newArrayOfCustomer;
 
-        protected Result(String[] newArrayOfCustomerLines, String[] newArrayOfPreferredLines) {
-            this.newArrayOfCustomerLines = newArrayOfCustomerLines;
-            this.newArrayOfPreferredLines = newArrayOfPreferredLines;
+        protected Result(Customer[] newArrayOfCustomer, PreferredCustomer[] newArrayOfPreferred) {
+            this.newArrayOfCustomer = newArrayOfCustomer;
+            this.newArrayOfPreferred = newArrayOfPreferred;
         }
     }
 
@@ -46,7 +44,7 @@ class ProcessOrder {
         Customer[] arrayOfCustomers = readCustomerFile(arrayOfCustomerLines);
         PreferredCustomer[] arrayOfPreferred;
 
-        Result result = new Result(arrayOfCustomerLines, arrayOfCustomerLines);
+        Result result;
 
         //Check whether the preferred exists
         boolean preferredFileExists = preferredFileName.exists();
@@ -55,6 +53,7 @@ class ProcessOrder {
         if (preferredFileExists) {
             arrayOfPreferredLines = readFileIntoArrayOfLine(preferredFileName);
             arrayOfPreferred = readPreferredFile(arrayOfPreferredLines);
+            result = new Result(arrayOfCustomers, arrayOfPreferred);
             for (int count = 0; count < arrayOfTransactionLines.length; count++) {
                 //get customer ID of the transaction
                 int ID = ID(arrayOfTransactionLines[count]);
@@ -68,21 +67,23 @@ class ProcessOrder {
 
                 //If the ID belongs to preferred, call the processPreferred function
                 if (isCustomer < 0 && isPreferred >= 0) {
-                    processPreferred(arrayOfCustomerLines, arrayOfPreferred, isPreferred, amountSpent, preferredFileName);
+                    result = processPreferred(arrayOfCustomers, arrayOfPreferred, isPreferred, amountSpent, preferredFileName);
+                    arrayOfCustomers = result.newArrayOfCustomer;
+                    arrayOfPreferred = result.newArrayOfPreferred;
                     // If the ID belongs to customer, call the processCustomer function
                 } else if (isCustomer >= 0 && isPreferred < 0) {
-                    result = processCustomer(arrayOfCustomers, arrayOfCustomerLines, arrayOfPreferredLines,
-                            isCustomer, amountSpent);
+                    result = processCustomer(arrayOfCustomers, arrayOfPreferred, isCustomer, amountSpent);
                 }
             }
-            writeToFile(result.newArrayOfCustomerLines, customerFileName);
+            writeToCustomerFile(result.newArrayOfCustomer, customerFileName);
+            writeToPreferredFile(result.newArrayOfPreferred, preferredFileName);
         }
 
         //If the preferred file does not exist or exist but is empty
         else if (!preferredFileExists) {
             //If the preferred file does not exist, create one
             preferredFileName.createNewFile();
-            arrayOfPreferredLines = new String[0];
+            arrayOfPreferred = new PreferredCustomer[0];
 
             for (int count = 0; count < arrayOfTransactionLines.length; count++) {
                 //get customer ID of the transaction
@@ -92,13 +93,12 @@ class ProcessOrder {
                 double amountSpent = amountSpent(arrayOfTransactionLines[count]);
                 int isCustomer = isCustomer(arrayOfCustomers, ID);
                 //Process customer
-                result = processCustomer(arrayOfCustomers, arrayOfCustomerLines, arrayOfPreferredLines,
-                        isCustomer, amountSpent);
-                arrayOfPreferredLines = result.newArrayOfPreferredLines;
-                arrayOfCustomerLines = result.newArrayOfCustomerLines;
+                result = processCustomer(arrayOfCustomers, arrayOfPreferred, isCustomer, amountSpent);
+                arrayOfPreferred = result.newArrayOfPreferred;
+                arrayOfCustomers = result.newArrayOfCustomer;
             }
-            writeToFile(arrayOfPreferredLines, preferredFileName);
-            writeToFile(arrayOfCustomerLines, customerFileName);
+            writeToPreferredFile(arrayOfPreferred, preferredFileName);
+            writeToCustomerFile(arrayOfCustomers, customerFileName);
 
             //If the preferred file is empty, delete it
             if (preferredFileName.length() <= 0) {
@@ -109,11 +109,29 @@ class ProcessOrder {
 
     // Write the updated array of customer into a temporary file,
     // then delete the old file, and use the old name to rename the new
-    public void writeToFile(String[] array, File oldFile) throws IOException {
+    public void writeToCustomerFile(Customer[] array, File oldFile) throws IOException {
         String tmp = "tmp.txt";
         BufferedWriter out = new BufferedWriter((new FileWriter(tmp)));
         for (int count = 0; count < array.length; count++) {
-            out.write(array[count]);
+            out.write(array[count].toString());
+            if(count != array.length - 1)
+                out.write("\n");
+        }
+        out.flush();
+        out.close();
+
+        oldFile.delete();
+
+        File newFile = new File(tmp);
+        newFile.renameTo(oldFile);
+
+    }
+
+    public void writeToPreferredFile(PreferredCustomer[] array, File oldFile) throws IOException {
+        String tmp = "tmp.txt";
+        BufferedWriter out = new BufferedWriter((new FileWriter(tmp)));
+        for (int count = 0; count < array.length; count++) {
+            out.write(array[count].toString());
             if(count != array.length - 1)
                 out.write("\n");
         }
@@ -128,8 +146,8 @@ class ProcessOrder {
     }
 
     //This function is called when the customer ID in transaction belongs to the regular customers
-    public Result processCustomer(Customer[] arrayOfCustomer, String[] arrayOfCustomerLines,
-                                  String[] arrayOfPreferredLines, int isCustomer, double amountSpent) {
+    public Result processCustomer(Customer[] arrayOfCustomer, PreferredCustomer[] arrayOfPreferred,
+                                  int isCustomer, double amountSpent) {
 
         //Add the current amount spent into the previous amount spent
         arrayOfCustomer[isCustomer].updateAmountSpent(amountSpent);
@@ -138,25 +156,25 @@ class ProcessOrder {
         if (arrayOfCustomer[isCustomer].isPromoted()) {
 
             //move the customer from regular to preferred
-            arrayOfPreferredLines = moveToPreferred(arrayOfCustomer[isCustomer], arrayOfPreferredLines);
+            arrayOfPreferred = moveToPreferred(arrayOfCustomer[isCustomer], arrayOfPreferred);
             //PreferredCustomer[] newArrayOfPreferred = readPreferredFile(newArrayOfPreferredLines);
 
             //remove that customer in the regular customer array
-            arrayOfCustomerLines = removePromotedCustomer(arrayOfCustomerLines, isCustomer);
+            arrayOfCustomer = removePromotedCustomer(arrayOfCustomer, isCustomer);
             //Customer[] newArrayOfCustomer = readCustomerFile(newArrayOfCustomerLines);
 
-            return new Result(arrayOfCustomerLines, arrayOfPreferredLines);
+            return new Result(arrayOfCustomer, arrayOfPreferred);
         } else {
-            for (int i = 0; i < arrayOfCustomerLines.length; i++) {
-                arrayOfCustomerLines[i] = arrayOfCustomer[i].toString();
+            for (int i = 0; i < arrayOfCustomer.length; i++) {
+                arrayOfCustomer[i] = arrayOfCustomer[i];
             }
-            return new Result(arrayOfCustomerLines, arrayOfPreferredLines);
+            return new Result(arrayOfCustomer, arrayOfPreferred);
         }
 
     }
 
     //This function is called when the customer ID in the transaction file belongs to preferred customers
-    public void processPreferred(String[] arrayOfCustomerLines, PreferredCustomer[] arrayOfPreferred, int isPreferred,
+    public Result processPreferred(Customer[] arrayOfCustomer, PreferredCustomer[] arrayOfPreferred, int isPreferred,
                                  double amountSpent, File fileName) throws IOException {
         //get the discount percentage
         double discount = arrayOfPreferred[isPreferred].getDiscountPercentage();
@@ -166,43 +184,44 @@ class ProcessOrder {
         arrayOfPreferred[isPreferred].updateAmountSpent(amountAfterDiscount);
         //update the discount percentage
         arrayOfPreferred[isPreferred].updateDiscountPercentage();
-        String[] newArrayOfPreferredLines = new String[arrayOfPreferred.length];
+        PreferredCustomer[] newArrayOfPreferred = new PreferredCustomer[arrayOfPreferred.length];
         //loop through the array of preferred Customer, and convert each object into string
         for (int count = 0; count < arrayOfPreferred.length; count++) {
-            newArrayOfPreferredLines[count] = arrayOfPreferred[count].toString();
+            newArrayOfPreferred[count] = arrayOfPreferred[count];
         }
-        //write the array of updated preferred customers into a file
-        writeToFile(newArrayOfPreferredLines, fileName);
+        return new Result(arrayOfCustomer, newArrayOfPreferred);
     }
 
     //Remove the promoted customer out of the regular customer array
-    public String[] removePromotedCustomer(String[] arrayOfCustomerLines, int isCustomer) {
+    public Customer[] removePromotedCustomer(Customer[] arrayOfCustomer, int isCustomer) {
+
         //the new array size decreases by 1
-        int newArraySize = arrayOfCustomerLines.length - 1;
-        String[] newArrayOfCustomerLines = new String[newArraySize];
-        System.out.println("length: " + (arrayOfCustomerLines.length - 1));
-        System.out.println("is Customer: " + isCustomer);
+        int newArraySize = arrayOfCustomer.length - 1;
+        Customer[] newArrayOfCustomer = new Customer[newArraySize];
 
+        //If there is only one customer in the customer file
+        if(newArraySize == 0)
+            newArrayOfCustomer = new Customer[0];
         //If the removed customer locates at the end of the file
-        if (isCustomer == arrayOfCustomerLines.length - 1)
+        else if (newArraySize > 0 && isCustomer == arrayOfCustomer.length - 1)
             //copy the old array into a new array except the last customer
-            System.arraycopy(arrayOfCustomerLines, 0, newArrayOfCustomerLines, 0, isCustomer);
+            System.arraycopy(arrayOfCustomer, 0, newArrayOfCustomer, 0, isCustomer);
             //If the removed customer locates at the beginning of the file
-        else if (isCustomer == 0)
+        else if (newArraySize > 0 && isCustomer == 0)
             //start to copy from the second element in the old array into a new array
-            System.arraycopy(arrayOfCustomerLines, 1, newArrayOfCustomerLines, 0, newArraySize);
+            System.arraycopy(arrayOfCustomer, 1, newArrayOfCustomer, 0, newArraySize);
         //If the removed customer locates in the middle of the file
-        if (isCustomer != 0 && isCustomer < newArraySize)
+        else {
             //copy from the beginning of the old array into the new array except the promoted customer
-            System.arraycopy(arrayOfCustomerLines, 0, newArrayOfCustomerLines, 0, isCustomer);
-        System.arraycopy(arrayOfCustomerLines, isCustomer + 1, newArrayOfCustomerLines, isCustomer,
-                newArraySize - isCustomer);
-
-        return newArrayOfCustomerLines;
+            System.arraycopy(arrayOfCustomer, 0, newArrayOfCustomer, 0, isCustomer);
+            System.arraycopy(arrayOfCustomer, isCustomer + 1, newArrayOfCustomer, isCustomer,
+                    newArraySize - isCustomer);
+        }
+        return newArrayOfCustomer;
     }
 
     //Move to promoted customer to preferred array
-    public String[] moveToPreferred(Customer customer, String[] arrayOfPreferred) {
+    public PreferredCustomer[] moveToPreferred(Customer customer, PreferredCustomer[] arrayOfPreferred) {
         int newArraySize;
         PreferredCustomer newPreferred = new PreferredCustomer(customer.getID(), customer.getFirstName(),
                 customer.getLastName(), customer.getAmountSpent(), 0.0);
@@ -211,16 +230,16 @@ class ProcessOrder {
         // increase the new array size by 1
         if(arrayOfPreferred.length >= 1){
             newArraySize = arrayOfPreferred.length + 1;
-            String[] newArrayOfPreferred = new String[newArraySize];
+            PreferredCustomer[] newArrayOfPreferred = new PreferredCustomer[newArraySize];
             //copy all the preferred customers into a new array
             System.arraycopy(arrayOfPreferred, 0, newArrayOfPreferred, 0, newArraySize - 1);
             //copy the new promoted customer at the end of the new array
-            newArrayOfPreferred[newArraySize - 1] = newPreferred.toString();
+            newArrayOfPreferred[newArraySize - 1] = newPreferred;
             return newArrayOfPreferred;
         } else {
             newArraySize = 1;
-            String[] newArrayOfPreferred = new String[newArraySize];
-            newArrayOfPreferred[0] = newPreferred.toString();
+            PreferredCustomer[] newArrayOfPreferred = new PreferredCustomer[newArraySize];
+            newArrayOfPreferred[0] = newPreferred;
             return newArrayOfPreferred;
         }
     }
@@ -229,14 +248,15 @@ class ProcessOrder {
     public int isCustomer(Customer[] arrayOfCustomer, int ID) {
         int isCustomer = -1;
         int c = 0;
-        while (isCustomer == -1 && c < arrayOfCustomer.length) {
+        do{
             if (ID == arrayOfCustomer[c].getID())
                 //get the index where the ID in transaction matches the ID in regular customer file
                 isCustomer = c;
                 // if the customer is not the the regular customers file, return -1
             else isCustomer = -1;
             c++;
-        }
+        } while (isCustomer == -1 && c < arrayOfCustomer.length);
+
         return isCustomer;
     }
 
