@@ -31,9 +31,9 @@ class ProcessOrder {
 
     public void run() throws IOException {
         //Wrap file name into File
-        File transactionFileName = new File("orders.dat");
-        File preferredFileName = new File("preferred.dat");
-        File customerFileName = new File("customer.dat");
+        File transactionFileName = new File("orders4.dat");
+        File preferredFileName = new File("preferred4.dat");
+        File customerFileName = new File("customer4.dat");
 
         //Read files into array of lines of string
         String[] arrayOfCustomerLines = readFileIntoArrayOfLine(customerFileName);
@@ -73,6 +73,8 @@ class ProcessOrder {
                     // If the ID belongs to customer, call the processCustomer function
                 } else if (isCustomer >= 0 && isPreferred < 0) {
                     result = processCustomer(arrayOfCustomers, arrayOfPreferred, isCustomer, amountSpent);
+                    arrayOfCustomers = result.newArrayOfCustomer;
+                    arrayOfPreferred = result.newArrayOfPreferred;
                 }
             }
             writeToCustomerFile(result.newArrayOfCustomer, customerFileName);
