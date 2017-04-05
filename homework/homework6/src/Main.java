@@ -25,6 +25,21 @@ public class Main {
 
         System.out.println("Original Tree equals twin: " + tree.equals(twin));
 
+        BinaryTree similarToOriginalTree = new BinaryTree();
+        similarToOriginalTree.insert(new Node(58));
+        similarToOriginalTree.insert(new Node(90));
+        similarToOriginalTree.insert(new Node(15));
+        similarToOriginalTree.insert(new Node(37));
+        similarToOriginalTree.insert(new Node(1));
+        similarToOriginalTree.insert(new Node(45));
+        similarToOriginalTree.insert(new Node(16));
+        similarToOriginalTree.insert(new Node(55));
+        similarToOriginalTree.insert(new Node(20));
+
+        System.out.println("SimilarToOriginalTree: ");
+        similarToOriginalTree.inOrderTraversal();
+        System.out.println("SimilarToOriginalTree equals original tree: " + similarToOriginalTree.equals(tree));
+
         BinaryTree emptyTree = new BinaryTree();
         System.out.println("Original Tree equals empty tree: " + tree.equals(emptyTree));
 
