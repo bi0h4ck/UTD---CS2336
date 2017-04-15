@@ -1,16 +1,18 @@
 package LinkList;
 
+//Diem Pham dtp160130
 import java.io.*;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Test {
 
     public void run() throws IOException {
-        String[] files = {"A1.txt", "A2.txt", "A3.txt"};
+        String[] files = {"A1base.txt", "A2base.txt", "A3base.txt"};
         Scanner scanner = new Scanner(System.in);
 
+        Result result;
+        Result reservation = new Result();
         String fileName;
         int auditoriumNumber;
         int row;
@@ -37,7 +39,7 @@ public class Test {
             displaySeatArrangement(fileName, row, col);
 
             //read the chosen auditorium into Result class
-            Result result = readAuditorium(fileName, row, col);
+            result = readAuditorium(fileName, row, col);
 
             //Get the row number from user
             int rowNumber = getRowNumber(scanner, row);
@@ -54,33 +56,50 @@ public class Test {
             //if the requirement is not met -> recommend seat
             if (!isEnoughSeat) {
                 //possible starting seat
-                LinkedList possibleStartingSeat = possibleStartingSeat(result, numOfTickets);
-                if (possibleStartingSeat.size() == 0){
+                if(result.openList.head == null){
                     System.out.println("Your requirement is not met in this auditorium.");
                     System.out.println("Please choose another auditorium");
-                } else{
+                } else {
+                    //Find all possible starting seats
+                    LinkedList possibleStartingSeat = possibleStartingSeat(result, numOfTickets);
                     //Find the best seat in the entire auditorium
-                    DoubleLinkNode bestSeat = bestSeat(possibleStartingSeat, col);
-                    //Print best seats option
-                    printSeatOption(bestSeat, numOfTickets);
-                    wantToReserve = reserveTicket(scanner);
-                    if (wantToReserve)
-                        takeReservation(result, bestSeat, numOfTickets);
+                    DoubleLinkNode bestSeat = bestSeat(possibleStartingSeat, col, row);
+                    //If the best seat doesn't exist
+                    if(bestSeat.getRow() == 0){
+                        System.out.println("Your requirement is not met in this auditorium.");
+                        System.out.println("Please choose another auditorium");
+                    } else {
+                        //Print best seats option
+                        printSeatOption(bestSeat, numOfTickets);
+                        wantToReserve = reserveTicket(scanner);
+                        if (wantToReserve){
+                            reservation = takeReservation(result, bestSeat, numOfTickets);
+                            //update the auditorium file
+                            writeDataToFile(fileName, reservation.reservedList, 1, 1, row, col);
+                        }
+
+                    }
                 }
                 backToMainMenu = true;
+                //If the requirement is met
             } else {
                 wantToReserve = reserveTicket(scanner);
-                if (wantToReserve)
-                    takeReservation(result, new DoubleLinkNode(rowNumber, startingSeatNumber), numOfTickets);
+                if (wantToReserve) {
+                    reservation = takeReservation(result, result.openList.getHead().getNodeAt(rowNumber, startingSeatNumber), numOfTickets);
+                    //update the auditorium file
+                    writeDataToFile(fileName, reservation.reservedList, 1, 1, row, col);
+                }
                 backToMainMenu = true;
             }
-            //update the auditorium file
-            writeDataToFile(fileName, result.reservedList, 1, 1, row, col);
+
         } while (backToMainMenu);
     }
     class Result{
         public LinkedList reservedList;
         public LinkedList openList;
+
+        public Result(){
+        }
 
         public Result(LinkedList reservedList, LinkedList openList){
             this.reservedList = reservedList;
@@ -134,7 +153,6 @@ public class Test {
             }
         }
         return new Result(reservedList, openList);
-
     }
 
     private void displaySeatArrangement(String fileName, int row, int col) throws IOException{
@@ -249,7 +267,7 @@ public class Test {
         int count = 0;
         int startingSeat = startingSeatNumber;
         while (count < numOfTicket && cur != null) {
-            if (cur.row == rowNumber && cur.seat == startingSeat) {
+            if (cur.getRow() == rowNumber && cur.getSeat() == startingSeat) {
                 count++;
                 startingSeat++;
                 cur = cur.getNext();
@@ -263,7 +281,6 @@ public class Test {
             return false;
     }
 
-
     //Find all nodes that has starting seat met the number of tickets
     public LinkedList possibleStartingSeat(Result result, int numOfTicket){
         LinkedList possibleStartingSeat = new LinkedList();
@@ -271,7 +288,7 @@ public class Test {
         DoubleLinkNode cur = openList.head;
         DoubleLinkNode tmp = cur;
         int count = 1;
-        //int row = cur.row;
+        //int row = cur.getRow();
         if(numOfTicket == 1){
             while(cur.next != null){
                 possibleStartingSeat.addNode(cur);
@@ -279,14 +296,15 @@ public class Test {
             }
             possibleStartingSeat.addNode(cur);
         //If numOfTicket > 1
-        } else{
+        } else {
             do {
                 //while next seat next to tmp seat count++
-                while (tmp.next != null && count < numOfTicket && (tmp.next.row == tmp.row) && (tmp.next.seat - tmp.seat == 1)) {
+                while (tmp.next != null && count < numOfTicket && (tmp.next.getRow() == tmp.getRow()) && (tmp.next.getSeat() - tmp.getSeat() == 1)) {
                     count++;
                     // if the numOfTicket is met, add that node
                     if (count == numOfTicket) {
-                        possibleStartingSeat.addNode(cur);
+                        DoubleLinkNode newNode = new DoubleLinkNode(cur.getRow(), cur.getSeat());
+                        possibleStartingSeat.addNode(newNode);
                         count = 1;
                         cur = cur.next;
                         tmp = cur.prev;
@@ -298,36 +316,49 @@ public class Test {
                     else if (tmp.next != null)
                         tmp = tmp.next;
                 }
-                //if the tmp.next.seat is on the same row but not next to temp.seat, get the next node
+                //if the tmp.next.getSeat() is on the same row but not next to temp.getSeat(), get the next node
                 // or the next node is not on the same row with the tmp row
-                if((tmp.next != null && tmp.next.row == tmp.row && tmp.next.seat - tmp.seat != 1) ||
-                (tmp.next != null && tmp.next.row != tmp.row)){
+                if((tmp.next != null && tmp.next.getRow() == tmp.getRow() && tmp.next.getSeat() - tmp.getSeat() != 1) ||
+                (tmp.next != null && tmp.next.getRow() != tmp.getRow())){
                     cur = tmp.getNext();
                     tmp = cur;
                     count = 1;
                 }
             } while (tmp.next != null);
         }
+//        System.out.println("possible starting seat");
+//        possibleStartingSeat.printList();
         return possibleStartingSeat;
     }
 
     // Find the best starting seat
-    public DoubleLinkNode bestSeat(LinkedList possibleStartingSeat, int col){
-        DoubleLinkNode head = possibleStartingSeat.head;
-        DoubleLinkNode bestSeat = head;
-        DoubleLinkNode tmp = head;
-        double distanceTmp = distance(tmp.seat, col);
-
-        if(possibleStartingSeat.getSize() == 1)
-            return bestSeat;
-        else {
-            double closestSeat = distanceTmp;
-            while(tmp.next != null && distance(tmp.next.seat, col) < closestSeat){
-                closestSeat = distance(tmp.next.seat, col);
-                tmp = tmp.next;
+    public DoubleLinkNode bestSeat(LinkedList possibleStartingSeat, int col, int row){
+        if(possibleStartingSeat.head == null){
+            return new DoubleLinkNode();
+        } else {
+            DoubleLinkNode bestSeat = possibleStartingSeat.head;
+            double closestDistance = distance(bestSeat.getSeat(), col);
+            double closestRow = distanceR(bestSeat.getRow(), row);
+            DoubleLinkNode tmp = possibleStartingSeat.head;
+            for(int i = 0; i < possibleStartingSeat.getSize() - 1; i++){
+                if (distance(tmp.next.getSeat(), col) == closestDistance){
+                    if(distanceR(tmp.next.getRow(), row) < closestRow)
+                        bestSeat = tmp.next;
+                }
+                else if (distance(tmp.next.getSeat(), col) < closestDistance) {
+                    closestDistance = distance(tmp.next.getSeat(), col);
+                    bestSeat = tmp.next;
+                }
+                tmp = tmp.getNext();
             }
+            return bestSeat;
         }
-        return bestSeat;
+    }
+
+    public double distanceR(int rowNum, int row){
+        double midRow = row/1.0/2;
+        double distanceR = Math.abs(rowNum - midRow);
+        return distanceR;
     }
 
     //find distance between the first starting seat and the mid row
@@ -335,11 +366,11 @@ public class Test {
         double seatNum = seatNumber/1.0;
         double midRow;
         double dRow = col / 1.0;
-        if(col % 2 == 0){
-            midRow = dRow / 2 + 0.5;
-        } else{
+//        if(col % 2 == 0){
+//            midRow = dRow / 2 + 0.5;
+//        } else{
             midRow = dRow / 2;
-        }
+//        }
         double distance = Math.abs(seatNum - midRow);
         return distance;
     }
@@ -357,37 +388,44 @@ public class Test {
     //print out the recommended seats
     public void printSeatOption(DoubleLinkNode bestSeat, int numOfTickets) {
         System.out.println("The seats you chose are not available.");
-        System.out.println("Best seats available at row " + bestSeat.row + " are: ");
+        System.out.println("Best seats available at row " + bestSeat.getRow() + " are: ");
 
-        for (int i = bestSeat.seat; i < bestSeat.seat + numOfTickets; i++) {
+        for (int i = bestSeat.getSeat(); i < bestSeat.getSeat() + numOfTickets; i++) {
             System.out.println("seat number: " + i);
         }
     }
 
-    //write data to file
-    public File writeDataToFile(String fileName, LinkedList reservedList, int rowStart, int seat, int row, int col)
-            throws IOException {
-        String tmp = "tmp.txt";
-        String line = "";
-        FileWriter writer = new FileWriter(tmp, true);
-        BufferedWriter out = new BufferedWriter(writer);
-        String stringOfNodes = convertNodeIntoSeat(reservedList.getHead(), line, rowStart, seat, row, col);
-        out.write(stringOfNodes);
-        out.flush();
-        out.close();
+    public Result takeReservation(Result result, DoubleLinkNode bestSeat, int numOfTicket){
+        LinkedList listOfSeat1 = listOfSeat(bestSeat, numOfTicket);
+        LinkedList listOfSeat2 = listOfSeat(bestSeat, numOfTicket);
+        return new Result(result.reservedList.insertLinkList(listOfSeat1), result.openList.removeNodes(listOfSeat2));
+    }
 
-        File oldFile = new File(fileName);
-        oldFile.delete();
+    //put the required seats in a linked list and process the open list1
+    public LinkedList listOfSeat(DoubleLinkNode bestSeat, int numOfTicket){
+        LinkedList listOfSeat = new LinkedList();
+        int row = bestSeat.row;
+        int seat = bestSeat.seat;
+        DoubleLinkNode currentSeat;
+        for(int i = 0; i < numOfTicket; i++){
+            currentSeat = new DoubleLinkNode(row, seat);
+            listOfSeat.addNode(currentSeat);
+            seat++;
+        }
+        return listOfSeat;
+    }
 
-        File newFile = new File(tmp);
-        newFile.renameTo(oldFile);
-        return newFile;
+    public int[] countSeats(String fileName) throws IOException {
+        int row = numOfRow(fileName);
+        int col = numOfColumn(fileName);
+        Result result = readAuditorium(fileName, row, col);
+        return new int[] {result.openList.getSize(), result.reservedList.getSize()};
     }
 
     //Recursive function convert nodes to string
     public String convertNodeIntoSeat(DoubleLinkNode head, String line, int rowStart, int seat, int row, int col) throws IOException{
-        int r = head.row;
-        int s = head.seat;
+        int r = head.getRow();
+        int s = head.getSeat();
 
         if(rowStart == r && seat == s){
             line = line.concat(".");
@@ -409,31 +447,26 @@ public class Test {
         return convertNodeIntoSeat(head, line, rowStart, seat, row, col);
     }
 
-    public Result takeReservation(Result result, DoubleLinkNode bestSeat, int numOfTicket){
-        LinkedList listOfSeat = new LinkedList();
-        LinkedList reservedList = result.reservedList;
-        LinkedList openList = result.openList;
-        for(int i = 0; i < numOfTicket; i++){
-            listOfSeat.addNode(bestSeat);
-            bestSeat = bestSeat.next;
-        }
+    //write data to file
+    public void writeDataToFile(String fileName, LinkedList reservedList, int rowStart, int seat, int row, int col)
+            throws IOException {
+        String tmp = "tmp.txt";
+        String line = "";
+        FileWriter writer = new FileWriter(tmp, true);
+        BufferedWriter out = new BufferedWriter(writer);
+        String stringOfNodes = convertNodeIntoSeat(reservedList.getHead(), line, rowStart, seat, row, col);
+        out.write(stringOfNodes);
+        out.flush();
+        out.close();
 
+        File oldFile = new File(fileName);
+        oldFile.delete();
 
-        for (int i = 0; i < numOfTicket; i++){
-            reservedList.insertNode(bestSeat);
-            openList.removeNode(bestSeat);
-            bestSeat = bestSeat.getNext();
-        }
-        return new Result(reservedList, openList);
+        File newFile = new File(tmp);
+        newFile.renameTo(oldFile);
     }
 
-    public int[] countSeats(String fileName) throws IOException {
-        int row = numOfRow(fileName);
-        int col = numOfColumn(fileName);
-        Result result = readAuditorium(fileName, row, col);
-        return new int[] {result.openList.getSize(), result.reservedList.getSize()};
-    }
-
+    //Print report
     public void printReport(String []files) throws IOException{
         String [] auditoriumName = {"Auditorium 1", "Auditorium 2", "Auditorium 3"};
         int ticketPrice = 7;
